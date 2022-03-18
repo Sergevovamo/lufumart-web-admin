@@ -1,0 +1,6 @@
+/* Add this to allow sidebar, navbar & content resize appropriately */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}

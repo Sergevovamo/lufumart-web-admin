@@ -1,0 +1,77 @@
+.login-section {
+	display: flex;
+	align-items: center;
+	height: 100vh;
+}
+.login-section::after {
+	content: '';
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+	background-image: url('https://res.cloudinary.com/lufumart-ecommerce/image/upload/q_auto/v1647589208/bg-ecommerce_o8wbtf.jpg');
+	opacity: 1;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	position: absolute;
+	z-index: -1;
+}
+.login-container {
+	max-width: 350px;
+	padding: 20px;
+	margin: 0 auto;
+}
+.wrapper {
+	width: 100%;
+	background: #fff;
+	border-radius: 5px;
+	box-shadow: 0px 4px 10px 1px rgba(0, 0, 0, 0.1);
+	margin: 4em auto auto auto;
+}
+.wrapper .title {
+	display: flex;
+	/* flex-direction: column; */
+	min-height: 100px;
+	background: #00ab55;
+	border-radius: 5px 5px 0 0;
+	color: #fff;
+	font-size: 30px;
+	font-weight: 600;
+	align-items: center;
+	justify-content: center;
+}
+
+.logo {
+	width: 100px;
+	max-width: 100%;
+}
+.wrapper form {
+	padding: 30px 25px 25px 25px;
+}
+.wrapper form .row {
+	height: 45px;
+	margin-bottom: 2rem;
+	position: relative;
+}
+.forgot a {
+	color: #f68b1e;
+	text-decoration: none;
+}
+.forgot a:hover {
+	color: #f68b1e;
+	text-decoration: underline;
+}
+.wrapper form .signup-link {
+	text-align: center;
+	margin-top: 20px;
+	font-size: 17px;
+}
+.wrapper form .signup-link a {
+	color: #1795f1;
+	text-decoration: none;
+}
+form .signup-link a:hover {
+	text-decoration: underline;
+}

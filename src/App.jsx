@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { Routes, Route } from 'react-router-dom';
 import {
 	Landing,
 	// Sidebar components
@@ -118,6 +119,7 @@ const App = () => {
 				<Route path="/forgot-password" element={<ForgotPassword />} />
 				<Route path="*" element={<PageNotFound />} />
 			</Routes>
+			<Toaster position="top-center" />
 		</ThemeProvider>
 	);
 };

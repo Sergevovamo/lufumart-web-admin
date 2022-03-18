@@ -22,7 +22,6 @@ const Login = () => {
 
 	const {
 		register,
-		getValues,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
@@ -38,7 +37,6 @@ const Login = () => {
 		setButtonLoading(true);
 		e.preventDefault();
 		await dispatch(loginUser(data));
-		// setButtonLoading(false);
 	};
 
 	useEffect(() => {
@@ -55,7 +53,7 @@ const Login = () => {
 		} else {
 			setButtonLoading(false);
 		}
-	}, [error.id === 'LOGIN_FAIL']);
+	}, [error]);
 
 	return (
 		<section className="login-section">

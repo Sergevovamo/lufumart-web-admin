@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { TextField } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import AdornedButton from '../utils/AdornedButton';
 import { forgotPassword } from '../store/actions/auth-actions';
 import '../css/ForgotPassword.css';
@@ -11,6 +10,7 @@ import '../css/ForgotPassword.css';
 const ForgotPassword = () => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	let auth = useSelector((state) => state.auth);
 	let error = useSelector((state) => state.error);
@@ -18,9 +18,10 @@ const ForgotPassword = () => {
 	const [showPassword, setShowPassword] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);
 
+	const origin = location.state?.from?.pathname || '/';
+
 	const {
 		register,
-		getValues,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
@@ -36,15 +37,30 @@ const ForgotPassword = () => {
 		setButtonLoading(true);
 		e.preventDefault();
 		await dispatch(forgotPassword(data));
-		// setButtonLoading(false);
 	};
 
 	useEffect(() => {
+		if (auth.isAuthenticated) {
+			setButtonLoading(false);
+			navigate(origin);
+		}
+	}, [auth.isAuthenticated]);
+
+	useEffect(() => {
 		if (auth.isResetPassword) {
+			setButtonLoading(false);
 			navigate('/login');
-			// setButtonLoading(false);
 		}
 	}, [auth.isResetPassword]);
+
+	useEffect(() => {
+		// Check for forgot password error
+		if (error.id === 'RESET_FAIL') {
+			setButtonLoading(false);
+		} else {
+			setButtonLoading(false);
+		}
+	}, [error]);
 
 	return (
 		<section className="forgot-section">

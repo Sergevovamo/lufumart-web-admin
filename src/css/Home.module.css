@@ -1,10 +1,88 @@
 .home_container {
 	margin: 5rem 15px;
 }
+.home_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 25px;
+	width: 100%;
+}
+.home_header h4 {
+	font-size: 30px;
+}
+.home_main_header {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 1rem;
+	width: 100%;
+}
+.home_card_header {
+	display: flex;
+	margin-bottom: 1rem;
+	padding: 25px 25px;
+	min-height: 12vh;
+	gap: 1rem;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.image_header_1 {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background: #d6e1fb;
+}
+.image_header_2 {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background: #ccf0d1;
+}
+.image_header_3 {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	background: #ffe8d0;
+}
+
+.sales_statistics {
+	margin-bottom: 1rem;
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	gap: 1rem;
+}
+.sales_stat_content {
+	padding: 15px 25px;
+	min-height: 15vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.sales_stat_content h4 {
+	margin-bottom: 1rem;
+}
+.marketing_content {
+	padding: 15px 25px;
+	min-height: 15vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.marketing_content h4 {
+	margin-bottom: 1rem;
+}
+
 .home_main_content {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	/* background: red; */
+	gap: 1rem;
 }
 .home_left_content {
 	display: grid;
@@ -30,4 +108,75 @@
 	margin-top: -5px;
 	padding-top: 10px;
 	margin-bottom: 0.5rem;
+}
+
+.home_right_content {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	min-height: 100px;
+	gap: 5px;
+}
+
+.product_card {
+	padding: 15px 25px;
+	min-height: 20vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+
+.sellers_card {
+	padding: 15px 25px;
+	min-height: 20vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+
+.hr {
+	margin-top: 1rem;
+	border: 1px solid #ebedf2;
+}
+
+.chart_content {
+	display: flex;
+	align-items: center;
+	margin-top: 10px;
+}
+
+.home_analytics {
+	margin-top: 1rem;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	min-height: 100px;
+	gap: 5px;
+}
+.sales_chart {
+	padding: 15px 25px;
+	min-height: 20vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.stock_chart {
+	padding: 15px 25px;
+	min-height: 20vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+
+.sales_chart h4 {
+	margin-bottom: 1rem;
+}
+.stock_chart h4 {
+	margin-bottom: 1rem;
 }

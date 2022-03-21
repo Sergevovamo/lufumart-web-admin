@@ -13,7 +13,7 @@ import { getMonthNameByOrder } from './MonthOrder';
 
 const Trans = () => {
 	return (
-		<ResponsiveContainer width="100%" height={300}>
+		<ResponsiveContainer width="99%" height={300}>
 			<BarChart
 				data={RAINFALL['2019']}
 				margin={{

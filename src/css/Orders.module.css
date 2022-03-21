@@ -1,0 +1,16 @@
+.orders_container {
+	margin: 5rem 15px;
+}
+.orders_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 5px;
+	width: 100%;
+}
+.orders_header h4 {
+	font-size: 30px;
+}
+.orders_content {
+	min-height: 60vh;
+}

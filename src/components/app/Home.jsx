@@ -1,14 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-	Box,
-	Card,
-	CardContent,
-	CardActions,
-	Typography,
-	Button,
-	IconButton,
-} from '@mui/material';
+import { Button } from '@mui/material';
 import CountUp from 'react-countup';
 import PieChartM from './PieChartM';
 import SalesChart from './SalesChart';

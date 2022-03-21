@@ -329,7 +329,7 @@ const MyProducts = () => {
 						marginRight: '1rem',
 					}}
 				>
-					<h3>Products</h3>
+					<h3>{products?.products?.length} Products</h3>
 					<Button variant="contained" onClick={handleClickOpen}>
 						Add Product
 					</Button>

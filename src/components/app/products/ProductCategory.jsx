@@ -211,7 +211,9 @@ const ProductCategory = () => {
 						marginRight: '1rem',
 					}}
 				>
-					<h3>Product Categories</h3>
+					<h3>
+						{productCategories?.productCategories?.length} Product Categories
+					</h3>
 					<Button variant="contained" onClick={handleClickOpen}>
 						Add Category
 					</Button>

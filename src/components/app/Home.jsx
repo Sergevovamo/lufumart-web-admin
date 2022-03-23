@@ -58,15 +58,6 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-			<div className={styles.sales_statistics}>
-				<div className={styles.sales_stat_content}>
-					<h4>Sales Statistics</h4>
-					<AreaChart />
-				</div>
-				<div className={styles.marketing_content}>
-					<h4>Marketing</h4>
-				</div>
-			</div>
 			<div className={styles.home_main_content}>
 				<div className={styles.home_left_content}>
 					<div className={styles.card_detail}>

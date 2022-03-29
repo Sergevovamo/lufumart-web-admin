@@ -108,6 +108,7 @@ const Orders = () => {
 										<TableCell>${total}</TableCell>
 										<TableCell>{status}</TableCell>
 										<TableCell>{date}</TableCell>
+										<TableCell></TableCell>
 									</TableRow>
 								</Fragment>
 							);

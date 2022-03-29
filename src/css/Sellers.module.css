@@ -1,0 +1,26 @@
+.sellers_container {
+	margin: 5rem 15px;
+}
+.sellers_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 5px;
+	width: 100%;
+}
+.sellers_header h4 {
+	font-size: 30px;
+}
+.sellers_content {
+	min-height: 60vh;
+}
+.sellers_info {
+	display: flex;
+	flex-direction: column;
+}
+.image_header_1 {
+	width: 70px;
+	height: 50px;
+	border-radius: 50%;
+	background: #d6e1fb;
+}

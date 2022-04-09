@@ -1,6 +1,7 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import {
+	USER_LOADING,
 	AUTH_USER,
 	GET_USERS,
 	LOGIN_SUCCESS,
@@ -197,5 +198,25 @@ export const forgotPassword = (payload) => async (dispatch) => {
 			returnErrors(error.response.data, error.response.status, 'RESET_FAIL')
 		);
 		localStorage.removeItem('userToken');
+	}
+};
+
+export const getUsers = (payload) => async (dispatch) => {
+	const token = tokenConfig();
+
+	try {
+		dispatch({ type: USER_LOADING });
+		const response = await axios.get(`${USERS_AUTH}`, token);
+		const data = await response.data;
+
+		await dispatch({
+			type: GET_USERS,
+			payload: data,
+		});
+	} catch (error) {
+		toast.error('Error while fetching users!');
+		dispatch(
+			returnErrors(error.response.data, error.response.status, 'GET_USERS')
+		);
 	}
 };

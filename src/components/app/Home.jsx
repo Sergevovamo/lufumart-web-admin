@@ -13,7 +13,7 @@ const Home = () => {
 		<div className={styles.home_container}>
 			<div className={styles.home_header}>
 				<h4 style={styles.title}>Dashboard</h4>
-				<Button variant="contained">Create Report</Button>
+				{/* <Button variant="contained">Create Report</Button> */}
 			</div>
 			<div className={styles.home_main_header}>
 				<div className={styles.home_card_header}>

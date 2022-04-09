@@ -5,7 +5,8 @@ import React, {
 	useMemo,
 	Fragment,
 } from 'react';
-import { useDropzone } from 'react-dropzone';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -18,7 +19,6 @@ import {
 	TableHead,
 	TableRow,
 	Paper,
-	CircularProgress,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -27,28 +27,38 @@ import {
 	TextField,
 	Button,
 	IconButton,
+	Toolbar,
+	AppBar,
+	Typography,
+	Autocomplete,
+	CircularProgress,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import useTable from '../../../utils/useTable';
+import { tokenConfig } from '../../../store/actions/auth-actions';
 import {
-	postProductCategory,
-	getProductCategories,
+	postProductSubCategory,
+	getProductSubCategories,
 } from '../../../store/actions/product-actions';
 import AdornedButton from '../../../utils/AdornedButton';
-import styles from '../../../css/ProductCategory.module.css';
+import styles from '../../../css/ProductSubCategory.module.css';
 
-const ProductCategory = () => {
+const ProductSubCategory = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	let auth = useSelector((state) => state.auth);
-	let productCategories = useSelector((state) => state.products);
-	let loading = useSelector((state) => state.products?.isLoading);
+	const token = tokenConfig();
 
-	const [files, setFiles] = useState([]);
+	let productSubCategories = useSelector((state) => state.products);
+	let isLoading = useSelector((state) => state.products?.isLoading);
+
 	const [openPopup, setOpenPopup] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);
-	const [selectedRole, setSelectedRole] = useState('Administrator');
+	const [open, setOpen] = useState(false);
+	const [options, setOptions] = useState([]);
+	const [selectedCategory, setSelectedCategory] = useState([]);
+
+	const loading = open && options.length === 0;
 
 	const [filteredSearch, setFilteredSearch] = useState({
 		fn: (items) => {
@@ -67,46 +77,46 @@ const ProductCategory = () => {
 		shouldFocusError: true,
 	});
 
-	const onDrop = useCallback((acceptedFiles) => {
-		setFiles(
-			acceptedFiles.map((file) =>
-				Object.assign(file, {
-					preview: URL.createObjectURL(file),
-				})
-			)
-		);
+	useEffect(() => {
+		dispatch(getProductSubCategories());
 	}, []);
-
-	const {
-		getRootProps,
-		getInputProps,
-		isDragActive,
-		isDragAccept,
-		isDragReject,
-	} = useDropzone({
-		onDrop,
-		accept: 'image/jpeg, image/png',
-		maxFiles: 1,
-	});
-
-	const style = useMemo(
-		() => ({
-			...baseStyle,
-			...(isDragActive ? activeStyle : {}),
-			...(isDragAccept ? acceptStyle : {}),
-			...(isDragReject ? rejectStyle : {}),
-		}),
-		[isDragActive, isDragReject, isDragAccept]
-	);
 
 	useEffect(() => {
-		dispatch(getProductCategories());
-	}, []);
+		let active = true;
+
+		if (!loading) {
+			return undefined;
+		}
+		(async () => {
+			const response = await axios.get(
+				'https://api-v1.lufumart.com/api/v1/product-categories',
+				token
+			);
+			const categories = await response.data;
+
+			if (active) {
+				setOptions(categories);
+			}
+		})();
+		return () => {
+			active = false;
+		};
+	}, [loading]);
+
+	useEffect(() => {
+		if (!open) {
+			setOptions([]);
+		}
+	}, [open]);
+
+	const selectedOption = (value) => {
+		setSelectedCategory(value);
+	};
 
 	const columns = useMemo(() => COLUMNS, []);
 	const data = useMemo(
-		() => productCategories?.productCategories,
-		[productCategories?.productCategories]
+		() => productSubCategories?.productSubCategories,
+		[productSubCategories?.productSubCategories]
 	);
 
 	const {
@@ -133,10 +143,6 @@ const ProductCategory = () => {
 		});
 	};
 
-	const handleChange = (event) => {
-		setSelectedRole(event.target.value);
-	};
-
 	const handleClickOpen = () => {
 		setOpenPopup(true);
 	};
@@ -152,47 +158,18 @@ const ProductCategory = () => {
 
 		const newData = {
 			name,
-			file: files[0],
 			description,
+			categoryId: selectedCategory?._id,
 		};
 
-		await dispatch(postProductCategory(newData));
-		await dispatch(getProductCategories());
+		console.log(newData);
+
+		await dispatch(postProductSubCategory(newData));
+		await dispatch(getProductSubCategories());
 
 		setButtonLoading(false);
 		handleCloseDialog();
 	};
-
-	const thumbs = files.map((file) => (
-		<div
-			key={file.name}
-			onClick={() => onDelete(file)}
-			style={{ cursor: 'pointer' }}
-		>
-			<img
-				style={{ width: '100px', marginRight: '.8rem' }}
-				src={file.preview}
-				alt={file.name}
-			/>
-		</div>
-	));
-
-	const onDelete = (image) => {
-		const currentIndex = files.indexOf(image);
-
-		let newImages = [...files];
-		newImages.splice(currentIndex, 1);
-
-		setFiles(newImages);
-	};
-
-	// clean up
-	useEffect(
-		() => () => {
-			files.forEach((file) => URL.revokeObjectURL(file.preview));
-		},
-		[files]
-	);
 
 	return (
 		<div className={styles.product_container}>
@@ -214,26 +191,28 @@ const ProductCategory = () => {
 					}}
 				>
 					<h3>
-						{productCategories?.productCategories?.length} Product Categories
+						{productSubCategories?.productSubCategories?.length} Product Sub
+						Categories
 					</h3>
 					<Button variant="contained" onClick={handleClickOpen}>
-						Add Category
+						Add Sub Category
 					</Button>
 				</div>
 				<CustomTable>
 					<CustomHead />
 					<TableBody>
-						{productCategories?.productCategories?.length > 0 ? (
-							recordsAfterPagingAndSorting()?.map((category) => {
+						{productSubCategories?.productSubCategories?.length > 0 ? (
+							recordsAfterPagingAndSorting()?.map((item) => {
 								const {
 									_id,
 									name,
 									description,
+									category,
 									admin,
-									imageUrl,
 									createdAt,
 									updatedAt,
-								} = category;
+								} = item;
+								console.log(item);
 
 								return (
 									<Fragment key={_id}>
@@ -242,15 +221,9 @@ const ProductCategory = () => {
 												'&:last-child td, &:last-child th': { border: 0 },
 											}}
 										>
-											<TableCell>
-												<img
-													style={{ width: '50px' }}
-													src={imageUrl}
-													alt={name}
-												/>
-											</TableCell>
 											<TableCell>{name}</TableCell>
 											<TableCell align="left">{description}</TableCell>
+											<TableCell align="left">{category?.name}</TableCell>
 											<TableCell align="left">{admin?.name}</TableCell>
 											<TableCell align="left">
 												{format(
@@ -274,7 +247,7 @@ const ProductCategory = () => {
 									colSpan={12}
 									style={{ padding: '1rem', textAlign: 'center' }}
 								>
-									{loading ? (
+									{isLoading ? (
 										<CircularProgress
 											variant="indeterminate"
 											disableShrink
@@ -282,7 +255,7 @@ const ProductCategory = () => {
 											thickness={4}
 										/>
 									) : (
-										<p>You have no product categories</p>
+										<p>You have no product sub categories</p>
 									)}
 								</TableCell>
 							</TableRow>
@@ -292,44 +265,71 @@ const ProductCategory = () => {
 				<CustomPagination />
 			</TableContainer>
 			<Dialog open={openPopup} onClose={handleCloseDialog}>
-				<DialogTitle>Add Product Category</DialogTitle>
+				<DialogTitle>Add Product Sub Category</DialogTitle>
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<DialogContent>
 						<DialogContentText style={{ marginBottom: '.8rem' }}>
-							Create product category to allow easy management of products.
+							Create product sub category to allow easy management of products.
 						</DialogContentText>
+						<Autocomplete
+							id="category"
+							style={{ marginBottom: '1rem' }}
+							open={open}
+							onOpen={() => {
+								setOpen(true);
+							}}
+							onClose={() => {
+								setOpen(false);
+							}}
+							onChange={(event, value) => selectedOption(value)}
+							isOptionEqualToValue={(option, value) => {
+								return option.name === value.name;
+							}}
+							getOptionLabel={(option) => option.name}
+							options={options}
+							loading={loading}
+							fullWidth
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									{...register('category', {
+										required: 'Product category is required!',
+										shouldFocus: true,
+									})}
+									sx={{ marginBottom: '.8rem' }}
+									label="Select Product Category"
+									variant="outlined"
+									InputProps={{
+										...params.InputProps,
+										endAdornment: (
+											<>
+												{loading ? (
+													<CircularProgress color="inherit" size={20} />
+												) : null}
+												{params.InputProps.endAdornment}
+											</>
+										),
+									}}
+									error={errors?.category ? true : false}
+									helperText={errors?.category?.message}
+								/>
+							)}
+						/>
 
 						<TextField
-							autoFocus
 							{...register('name', {
-								required: 'Product Category is required!',
+								required: 'Product Sub Category is required!',
 								shouldFocus: true,
 							})}
 							style={{ marginBottom: '.8rem' }}
 							name="name"
 							fullWidth
 							autoComplete="off"
-							label="Category Name"
-							placeholder="Baby Products"
+							label="Sub Category Name"
+							placeholder="Fashion"
 							error={errors?.name ? true : false}
 							helperText={errors?.name?.message}
 						/>
-
-						<div {...getRootProps({ style })}>
-							<input {...getInputProps()} />
-							<div>Drag and drop your images here.</div>
-							<em>(1 file is the maximum number of file you can drop here)</em>
-						</div>
-						<aside
-							style={{
-								display: 'flex',
-								flexWrap: 'wrap',
-								justifyContent: 'center',
-								marginTop: '.8rem',
-							}}
-						>
-							{thumbs}
-						</aside>
 
 						<TextField
 							{...register('description', {
@@ -342,30 +342,11 @@ const ProductCategory = () => {
 							multiline
 							rows={4}
 							autoComplete="off"
-							label="Product Category description"
+							label="Product Sub Category description"
 							placeholder="Type your description"
 							error={errors?.description ? true : false}
 							helperText={errors?.description?.message}
 						/>
-						{/* {auth?.user?.current_user?.isAdmin && (
-							<TextField
-								{...register('role', {
-									required: 'Role is required!',
-								})}
-								fullWidth
-								select
-								label="User role level"
-								value={selectedRole}
-								onChange={handleChange}
-								helperText="Please select user role level"
-							>
-								{roles.map((option) => (
-									<MenuItem key={option.value} value={option.value}>
-										{option.label}
-									</MenuItem>
-								))}
-							</TextField>
-						)} */}
 					</DialogContent>
 					<DialogActions sx={{ marginRight: '1rem', marginBottom: '1rem' }}>
 						<Button onClick={handleCloseDialog}>Cancel</Button>
@@ -384,32 +365,9 @@ const ProductCategory = () => {
 	);
 };
 
-export default ProductCategory;
-
-const roles = [
-	{
-		value: 'Administrator',
-		label: 'Administrator',
-	},
-	{
-		value: 'Normal staff',
-		label: 'Normal staff',
-	},
-	{
-		value: 'Seller',
-		label: 'Seller',
-	},
-	{
-		value: 'Customer',
-		label: 'Customer',
-	},
-];
+export default ProductSubCategory;
 
 const COLUMNS = [
-	{
-		id: 'photo',
-		label: 'Photo',
-	},
 	{
 		id: 'name',
 		label: 'Name',
@@ -417,6 +375,10 @@ const COLUMNS = [
 	{
 		id: 'description',
 		label: 'Description',
+	},
+	{
+		id: 'category',
+		label: 'Category',
 	},
 	{
 		id: 'admin',
@@ -431,29 +393,3 @@ const COLUMNS = [
 		label: 'Last Update',
 	},
 ];
-
-const baseStyle = {
-	display: 'flex',
-	flexDirection: 'column',
-	alignItems: 'center',
-	padding: '20px',
-	borderWidth: 2,
-	borderRadius: 2,
-	borderColor: '#eeeeee',
-	borderStyle: 'dashed',
-	backgroundColor: '#fafafa',
-	color: '#bdbdbd',
-	transition: 'border .3s ease-in-out',
-};
-
-const activeStyle = {
-	borderColor: '#2196f3',
-};
-
-const acceptStyle = {
-	borderColor: '#00e676',
-};
-
-const rejectStyle = {
-	borderColor: '#ff1744',
-};

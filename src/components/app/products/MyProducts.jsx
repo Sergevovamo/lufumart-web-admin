@@ -56,6 +56,7 @@ const MyProducts = () => {
 
 	let auth = useSelector((state) => state.auth);
 	let products = useSelector((state) => state.products);
+	let isLoading = useSelector((state) => state.products?.isLoading);
 
 	const [files, setFiles] = useState([]);
 	const [openPopup, setOpenPopup] = useState(false);
@@ -385,7 +386,16 @@ const MyProducts = () => {
 									colSpan={12}
 									style={{ padding: '1rem', textAlign: 'center' }}
 								>
-									You have no products
+									{isLoading ? (
+										<CircularProgress
+											variant="indeterminate"
+											disableShrink
+											size={25}
+											thickness={4}
+										/>
+									) : (
+										<p>You have no products</p>
+									)}
 								</TableCell>
 							</TableRow>
 						)}

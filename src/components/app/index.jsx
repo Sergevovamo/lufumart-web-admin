@@ -8,6 +8,7 @@ export { default as Wallet } from './Wallet';
 export { default as Sellers } from './Sellers';
 export { default as Customers } from './Customers';
 export { default as ProductCategory } from './products/ProductCategory';
+export { default as ProductSubCategory } from './products/ProductSubCategory';
 export { default as PopularProducts } from './products/PopularProducts';
 export { default as MyProducts } from './products/MyProducts';
 export { default as SellerProducts } from './products/SellerProducts';

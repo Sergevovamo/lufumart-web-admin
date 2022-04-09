@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, Fragment } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import {
 	Button,
 	Paper,
@@ -23,11 +25,24 @@ import {
 	CircularProgress,
 } from '@mui/material';
 import { format } from 'date-fns';
+import { getUsers, registerUser } from '../../store/actions/auth-actions';
 import { useForm } from 'react-hook-form';
 import useTable from '../../utils/useTable';
 import styles from '../../css/Customers.module.css';
+import AdornedButton from '../../utils/AdornedButton';
 
 const Customers = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
+
+	let users = useSelector((state) => state.auth.users?.customers);
+	let isLoading = useSelector((state) => state.auth.users?.isLoading);
+
+	const [openPopup, setOpenPopup] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
+	const [buttonLoading, setButtonLoading] = useState(false);
+	const [selectedRole, setSelectedRole] = useState('Female');
+
 	const [filteredSearch, setFilteredSearch] = useState({
 		fn: (items) => {
 			return items;
@@ -52,7 +67,7 @@ const Customers = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(data, columns, filteredSearch);
+	} = useTable(users, columns, filteredSearch);
 
 	const handleSearch = (e) => {
 		let target = e.target;
@@ -71,11 +86,42 @@ const Customers = () => {
 		});
 	};
 
+	useEffect(() => {
+		dispatch(getUsers());
+	}, []);
+
+	const handleChange = (event) => {
+		setSelectedRole(event.target.value);
+	};
+
+	const handleClickOpen = () => {
+		setOpenPopup(true);
+	};
+
+	const handleCloseDialog = () => {
+		setOpenPopup(false);
+	};
+
+	const handleShowPassword = () =>
+		setShowPassword((prevShowPassword) => !prevShowPassword);
+
+	const onSubmit = async (data, e) => {
+		e.preventDefault();
+		setButtonLoading(true);
+
+		dispatch(registerUser(data));
+
+		setButtonLoading(false);
+		handleCloseDialog();
+	};
+
 	return (
 		<div className={styles.customers_container}>
 			<div className={styles.customers_header}>
 				<h4 style={styles.title}>Customers list</h4>
-				<Button variant="contained">Create New</Button>
+				<Button variant="contained" onClick={handleClickOpen}>
+					Create New
+				</Button>
 			</div>
 			<TableContainer component={Paper} className={styles.orders_content}>
 				<div
@@ -88,45 +134,214 @@ const Customers = () => {
 						marginRight: '1rem',
 					}}
 				>
-					<h3>{recordsAfterPagingAndSorting()?.length} Customers</h3>
+					<h3>{users?.length} Customers</h3>
 				</div>
 				<CustomTable>
 					<CustomHead />
 					<TableBody>
-						{recordsAfterPagingAndSorting()?.map((order) => {
-							const { id, name, email, total, status, date } = order;
-							return (
-								<Fragment key={id}>
-									<TableRow
-										sx={{
-											'&:last-child td, &:last-child th': { border: 0 },
-										}}
-									>
-										<TableCell>{id}</TableCell>
-										<TableCell>{name}</TableCell>
-										<TableCell>{email}</TableCell>
-										<TableCell>{status}</TableCell>
-										<TableCell>{date}</TableCell>
-										<TableCell></TableCell>
-									</TableRow>
-								</Fragment>
-							);
-						})}
+						{users?.length > 0 ? (
+							recordsAfterPagingAndSorting()?.map((user, index) => {
+								const {
+									_id,
+									name,
+									email,
+									phone,
+									gender,
+									isUserActive,
+									createdAt,
+								} = user;
+
+								return (
+									<Fragment key={index}>
+										<TableRow
+											sx={{
+												'&:last-child td, &:last-child th': { border: 0 },
+											}}
+										>
+											<TableCell>{name}</TableCell>
+											<TableCell>{email}</TableCell>
+											<TableCell>{phone}</TableCell>
+											<TableCell>{gender}</TableCell>
+											<TableCell>
+												{isUserActive ? 'active' : 'inactive'}
+											</TableCell>
+											<TableCell>
+												{format(
+													new Date(createdAt),
+													"do MMM yyyy, h:mm:ss aaaaa'm'"
+												)}
+											</TableCell>
+											<TableCell></TableCell>
+										</TableRow>
+									</Fragment>
+								);
+							})
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={12}
+									style={{ padding: '1rem', textAlign: 'center' }}
+								>
+									{isLoading ? (
+										<CircularProgress
+											variant="indeterminate"
+											disableShrink
+											size={25}
+											thickness={4}
+										/>
+									) : (
+										<p>You have no customers</p>
+									)}
+								</TableCell>
+							</TableRow>
+						)}
 					</TableBody>
 				</CustomTable>
 				<CustomPagination />
 			</TableContainer>
+			<Dialog open={openPopup} onClose={handleCloseDialog}>
+				<DialogTitle>Add Customer</DialogTitle>
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<DialogContent>
+						<DialogContentText style={{ marginBottom: '.8rem' }}>
+							Create a new customer
+						</DialogContentText>
+						<TextField
+							autoFocus
+							{...register('name', {
+								required: 'Customer name is required!',
+								shouldFocus: true,
+							})}
+							style={{ marginBottom: '.8rem' }}
+							name="name"
+							fullWidth
+							autoComplete="off"
+							label="Customer name"
+							placeholder="John Doe"
+							error={errors?.name ? true : false}
+							helperText={errors?.name?.message}
+						/>
+						<TextField
+							{...register('email', {
+								required: 'Email address is required!',
+								pattern: {
+									value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+									message: 'Invalid email address',
+								},
+								shouldFocus: true,
+							})}
+							name="email"
+							fullWidth
+							autoComplete="off"
+							label="Email address"
+							placeholder="johndoe@example.com"
+							error={errors?.email ? true : false}
+							helperText={errors?.email?.message}
+						/>
+
+						<TextField
+							{...register('phone', {
+								required: 'Password is required!',
+								pattern: {
+									value: /^(\+243|0)[1-9]\d{8}$/i,
+									message: 'Please enter a valid mobile number',
+								},
+								shouldFocus: true,
+							})}
+							style={{ marginBottom: '.8rem' }}
+							label="Mobile number"
+							placeholder="07xxxxxxxx"
+							name="phone"
+							type="number"
+							margin="normal"
+							autoComplete="off"
+							fullWidth
+							error={errors?.phone ? true : false}
+							helperText={errors.phone && errors.phone.message}
+						/>
+
+						<TextField
+							{...register('role', {
+								required: 'Gender is required!',
+							})}
+							fullWidth
+							select
+							label="Gender"
+							value={selectedRole}
+							onChange={handleChange}
+							helperText="Please select user gender"
+						>
+							{roles.map((option) => (
+								<MenuItem key={option.value} value={option.value}>
+									{option.label}
+								</MenuItem>
+							))}
+						</TextField>
+
+						<TextField
+							{...register('password', {
+								required: 'Password is required!',
+								minLength: {
+									value: 8,
+									message: 'Password should be atleast 8 characters',
+								},
+							})}
+							fullWidth
+							name="password"
+							type={showPassword ? 'text' : 'password'}
+							label="Password"
+							autoComplete="off"
+							error={errors?.password ? true : false}
+							helperText={errors?.password?.message}
+						/>
+
+						<TextField
+							{...register('password_confirmation', {
+								required: 'Please confirm password!',
+								validate: (value) =>
+									value === getValues('password') || 'Passwords do not match',
+							})}
+							name="password_confirmation"
+							type={showPassword ? 'text' : 'password'}
+							label="Confirm password"
+							margin="normal"
+							fullWidth
+							autoComplete="off"
+							error={errors?.password_confirmation ? true : false}
+							helperText={errors?.password_confirmation?.message}
+						/>
+					</DialogContent>
+					<DialogActions sx={{ marginRight: '1rem', marginBottom: '1rem' }}>
+						<Button onClick={handleCloseDialog}>Cancel</Button>
+						<AdornedButton
+							type="submit"
+							disabled={buttonLoading ? true : false}
+							loading={buttonLoading}
+							variant="contained"
+						>
+							Create
+						</AdornedButton>
+					</DialogActions>
+				</form>
+			</Dialog>
 		</div>
 	);
 };
 
 export default Customers;
 
-const COLUMNS = [
+const roles = [
 	{
-		id: 'id',
-		label: '#ID',
+		value: 'Male',
+		label: 'Male',
 	},
+	{
+		value: 'Female',
+		label: 'Female',
+	},
+];
+
+const COLUMNS = [
 	{
 		id: 'name',
 		label: 'Name',
@@ -136,16 +351,20 @@ const COLUMNS = [
 		label: 'Email',
 	},
 	{
+		id: 'phone',
+		label: 'Phone',
+	},
+	{
+		id: 'gender',
+		label: 'Gender',
+	},
+	{
 		id: 'status',
 		label: 'Status',
 	},
 	{
 		id: 'date',
 		label: 'Date',
-	},
-	{
-		id: 'action',
-		label: 'Action',
 	},
 ];
 

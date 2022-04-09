@@ -40,7 +40,7 @@ const Navbar = ({
 						</ul>
 					</div>
 					<div className="profile-box">
-						<div className="search-box">
+						{/* <div className="search-box">
 							<i
 								onClick={handleSearchToggle}
 								className={searchToggled ? 'bx bx-x' : 'bx bx-search'}
@@ -55,7 +55,7 @@ const Navbar = ({
 									<i className="bx bx-bell"></i>
 								</Badge>
 							</IconButton>
-						</div>
+						</div> */}
 						<ClickAwayListener onClickAway={handleClickAway}>
 							<div className="menu-container">
 								<IconButton onClick={onClick}>

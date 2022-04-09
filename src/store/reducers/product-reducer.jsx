@@ -3,6 +3,8 @@ import {
 	POST_PRODUCT_CATEGORY,
 	GET_PRODUCT_CATEGORY,
 	GET_PRODUCT_CATEGORIES,
+	GET_PRODUCT_SUB_CATEGORIES,
+	POST_PRODUCT_SUB_CATEGORY,
 	DELETE_PRODUCT_CATEGORY,
 	POST_PRODUCT,
 	GET_PRODUCT,
@@ -10,9 +12,12 @@ import {
 } from '../../constants/types';
 
 const initialState = {
+	isLoading: false,
 	isAuthenticated: !!localStorage.getItem('userToken'),
 	productCategory: null,
+	productSubCategory: null,
 	productCategories: null,
+	productSubCategories: null,
 	product: null,
 	products: null,
 };
@@ -38,12 +43,26 @@ export default function IdeaReducer(state = initialState, action) {
 				isLoading: false,
 				productCategories: action.payload,
 			};
+		case GET_PRODUCT_SUB_CATEGORIES:
+			return {
+				...state,
+				isAuthenticated: true,
+				isLoading: false,
+				productSubCategories: action.payload,
+			};
 		case POST_PRODUCT_CATEGORY:
 			return {
 				...state,
 				isAuthenticated: true,
 				isLoading: false,
 				productCategory: action.payload,
+			};
+		case POST_PRODUCT_SUB_CATEGORY:
+			return {
+				...state,
+				isAuthenticated: true,
+				isLoading: false,
+				productSubCategory: action.payload,
 			};
 		case GET_PRODUCT:
 			return {

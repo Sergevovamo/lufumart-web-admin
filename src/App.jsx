@@ -14,6 +14,7 @@ import {
 	MyProducts,
 	SellerProducts,
 	ProductCategory,
+	ProductSubCategory,
 	PopularProducts,
 } from './components/app';
 import { PrivateRoute } from './middleware';
@@ -95,6 +96,14 @@ const App = () => {
 						element={
 							<PrivateRoute>
 								<ProductCategory />
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path="products-sub-category"
+						element={
+							<PrivateRoute>
+								<ProductSubCategory />
 							</PrivateRoute>
 						}
 					/>

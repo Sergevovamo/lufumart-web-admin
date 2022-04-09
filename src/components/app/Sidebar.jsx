@@ -61,7 +61,7 @@ const Sidebar = ({ toggled, handleDrawerToggle }) => {
 						</NavLink>
 						<span className="tooltip">Orders</span>
 					</li>
-					<li>
+					{/* <li>
 						<NavLink
 							to="/wallet"
 							activeclassname="active"
@@ -71,7 +71,7 @@ const Sidebar = ({ toggled, handleDrawerToggle }) => {
 							<span className="links_name">Wallet</span>
 						</NavLink>
 						<span className="tooltip">Wallet</span>
-					</li>
+					</li> */}
 					<li>
 						<NavLink
 							to="/sellers"

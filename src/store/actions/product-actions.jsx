@@ -4,8 +4,10 @@ import { batch } from 'react-redux';
 import {
 	PRODUCT_LOADING,
 	POST_PRODUCT_CATEGORY,
+	POST_PRODUCT_SUB_CATEGORY,
 	GET_PRODUCT_CATEGORY,
 	GET_PRODUCT_CATEGORIES,
+	GET_PRODUCT_SUB_CATEGORIES,
 	POST_PRODUCT,
 	GET_PRODUCT,
 	GET_PRODUCTS,
@@ -14,6 +16,8 @@ import { returnErrors, clearErrors } from './error-actions';
 
 const PRODUCTS_CATEGORY_SERVER =
 	'https://api-v1.lufumart.com/api/v1/product-categories';
+const PRODUCTS_SUB_CATEGORY_SERVER =
+	'https://api-v1.lufumart.com/api/v1/product-sub-categories';
 const PRODUCTS_SERVER = 'https://api-v1.lufumart.com/api/v1/products';
 
 export const tokenConfig = () => {
@@ -25,6 +29,27 @@ export const tokenConfig = () => {
 	const config = {
 		headers: {
 			'Content-Type': 'multipart/form-data',
+		},
+	};
+
+	// if token, add to headers
+	if (token) {
+		config.headers['Authorization'] = `Bearer ${token}`;
+	}
+
+	return config;
+};
+
+// Setup config headers and token for JSON bodies
+export const tokenConfigJSON = () => {
+	// Get token from localStorage
+	const token = localStorage.getItem('userToken');
+	// console.log(token);
+
+	// Headers
+	const config = {
+		headers: {
+			'content-Type': 'application/json',
 		},
 	};
 
@@ -81,10 +106,59 @@ export const postProductCategory = (payload) => async (dispatch) => {
 	}
 };
 
+export const postProductSubCategory = (payload) => async (dispatch) => {
+	const token = tokenConfigJSON();
+	const { name, description, categoryId } = payload;
+
+	try {
+		// Request body
+		const body = JSON.stringify({ name, description, categoryId });
+
+		// let formData = new FormData();
+
+		// formData.append('name', name);
+		// formData.append('categoryId', categoryId);
+		// formData.append('description', description);
+		// console.log(formData.get('categoryId'));
+
+		const response = await axios.post(
+			`${PRODUCTS_SUB_CATEGORY_SERVER}/create`,
+			body,
+			token
+		);
+		const data = await response.data;
+
+		if (data) {
+			batch(() => {
+				dispatch({ type: PRODUCT_LOADING });
+				dispatch({
+					type: POST_PRODUCT_SUB_CATEGORY,
+					payload: data,
+				});
+			});
+
+			toast.success(`Success! New product sub category added.`);
+		}
+
+		dispatch(clearErrors());
+	} catch (error) {
+		console.log(error);
+		toast.error('Error! Something went wrong.');
+		dispatch(
+			returnErrors(
+				error.response.data,
+				error.response.status,
+				'CREATE_PRODUCT_SUB_CATEGORY'
+			)
+		);
+	}
+};
+
 export const getProductCategories = () => async (dispatch) => {
 	const token = tokenConfig();
 
 	try {
+		dispatch({ type: PRODUCT_LOADING });
 		const response = await axios.get(`${PRODUCTS_CATEGORY_SERVER}`, token);
 		const data = await response.data;
 
@@ -102,6 +176,33 @@ export const getProductCategories = () => async (dispatch) => {
 				error.response.data,
 				error.response.status,
 				'GET_PRODUCT_CATEGORIES'
+			)
+		);
+	}
+};
+
+export const getProductSubCategories = () => async (dispatch) => {
+	const token = tokenConfig();
+
+	try {
+		dispatch({ type: PRODUCT_LOADING });
+		const response = await axios.get(`${PRODUCTS_SUB_CATEGORY_SERVER}`, token);
+		const data = await response.data;
+
+		// console.log(data);
+		await dispatch({
+			type: GET_PRODUCT_SUB_CATEGORIES,
+			payload: data,
+		});
+		dispatch(clearErrors());
+	} catch (error) {
+		console.log(error.response.data);
+		toast.error('Error. Something went wrong!');
+		dispatch(
+			returnErrors(
+				error.response.data,
+				error.response.status,
+				'GET_PRODUCT_SUB_CATEGORIES'
 			)
 		);
 	}
@@ -185,7 +286,7 @@ export const postProduct = (payload) => async (dispatch) => {
 		dispatch(clearErrors());
 	} catch (error) {
 		// console.log(error?.response?.data);
-		toast.error('Error! Adding product was unsucessful');
+		toast.error('Error! Adding product was unsuccessful');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'POST_PRODUCT')
 		);
@@ -196,6 +297,7 @@ export const getProducts = () => async (dispatch) => {
 	const token = tokenConfig();
 
 	try {
+		dispatch({ type: PRODUCT_LOADING });
 		const response = await axios.get(`${PRODUCTS_SERVER}`, token);
 		const data = await response.data;
 

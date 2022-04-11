@@ -61,14 +61,22 @@ const MyProducts = () => {
 	const [files, setFiles] = useState([]);
 	const [openPopup, setOpenPopup] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);
+
 	const [open, setOpen] = useState(false);
+	const [openSub, setOpenSub] = useState(false);
+
 	const [options, setOptions] = useState([]);
+	const [optionsSub, setOptionsSub] = useState([]);
+
 	const [selectedCategory, setSelectedCategory] = useState([]);
+	const [selectedSubCategory, setSelectedSubCategory] = useState([]);
+
 	const [availabilityValue, setAvailabilityValue] = useState(new Date());
 	const [startDateValue, setStartDateValue] = useState(new Date());
 	const [endDateValue, setEndDateValue] = useState(new Date());
 
 	const loading = open && options.length === 0;
+	const loadingSub = openSub && optionsSub.length === 0;
 
 	const [filteredSearch, setFilteredSearch] = useState({
 		fn: (items) => {
@@ -146,13 +154,45 @@ const MyProducts = () => {
 	}, [loading]);
 
 	useEffect(() => {
+		let active = true;
+
+		if (!loadingSub) {
+			return undefined;
+		}
+		(async () => {
+			const response = await axios.get(
+				`https://api-v1.lufumart.com/api/v1/product-sub-categories/get-sub-category-by-category?categoryId=${selectedCategory?._id}`,
+				token
+			);
+			const subCategories = await response.data;
+
+			if (active) {
+				setOptionsSub(subCategories);
+			}
+		})();
+		return () => {
+			active = false;
+		};
+	}, [loadingSub]);
+
+	useEffect(() => {
 		if (!open) {
 			setOptions([]);
 		}
 	}, [open]);
 
+	useEffect(() => {
+		if (!openSub) {
+			setOptionsSub([]);
+		}
+	}, [openSub]);
+
 	const selectedOption = (value) => {
 		setSelectedCategory(value);
+	};
+
+	const selectedOptionSub = (value) => {
+		setSelectedSubCategory(value);
 	};
 
 	const columns = useMemo(() => COLUMNS, []);
@@ -220,16 +260,11 @@ const MyProducts = () => {
 			condition,
 			inventoryThreshold,
 			availability,
-
 			manufactererPartNumber,
 		} = data;
 
 		if (files?.length == 0) {
 			return toast.error('Error! Please upload product images.');
-		}
-
-		if (parseInt(inventoryThreshold) < parseInt(quantity)) {
-			return toast.error(`Error! Inventory can't be less than quantity.`);
 		}
 
 		let today = new Date();
@@ -262,6 +297,7 @@ const MyProducts = () => {
 			quantity: parseInt(quantity),
 			files,
 			categoryId: selectedCategory?._id,
+			subCategoryId: selectedSubCategory?._id,
 			description,
 			condition,
 			inventoryThreshold: parseInt(inventoryThreshold),
@@ -474,6 +510,51 @@ const MyProducts = () => {
 										}}
 										error={errors?.category ? true : false}
 										helperText={errors?.category?.message}
+									/>
+								)}
+							/>
+							<Autocomplete
+								id="sub_category"
+								style={{ marginBottom: '1rem' }}
+								open={openSub}
+								onOpen={() => {
+									setOpenSub(true);
+								}}
+								onClose={() => {
+									setOpenSub(false);
+								}}
+								onChange={(event, value) => selectedOptionSub(value)}
+								isOptionEqualToValue={(option, value) => {
+									return option.name === value.name;
+								}}
+								getOptionLabel={(option) => option.name}
+								options={optionsSub}
+								loading={loadingSub}
+								fullWidth
+								sx={{ width: '91%' }}
+								renderInput={(params) => (
+									<TextField
+										{...params}
+										{...register('subCategory', {
+											required: 'Product sub category is required!',
+											shouldFocus: true,
+										})}
+										sx={{ marginBottom: '.8rem' }}
+										label="Select Product Sub Category"
+										variant="outlined"
+										InputProps={{
+											...params.InputProps,
+											endAdornment: (
+												<>
+													{loadingSub ? (
+														<CircularProgress color="inherit" size={20} />
+													) : null}
+													{params.InputProps.endAdornment}
+												</>
+											),
+										}}
+										error={errors?.subCategory ? true : false}
+										helperText={errors?.subCategory?.message}
 									/>
 								)}
 							/>

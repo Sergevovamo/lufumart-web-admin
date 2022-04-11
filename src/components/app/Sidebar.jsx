@@ -16,6 +16,8 @@ const Sidebar = ({ toggled, handleDrawerToggle }) => {
 		dispatch(logOut());
 	};
 
+	console.log(auth?.user);
+
 	return (
 		<>
 			<div className={toggled ? 'sidebar active' : 'sidebar'}>

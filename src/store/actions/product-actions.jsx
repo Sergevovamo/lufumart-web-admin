@@ -223,6 +223,7 @@ export const postProduct = (payload) => async (dispatch) => {
 		quantity,
 		description,
 		categoryId,
+		subCategoryId,
 		condition,
 		inventoryThreshold,
 		availability,
@@ -249,6 +250,7 @@ export const postProduct = (payload) => async (dispatch) => {
 		formData.append('quantity', quantity);
 		formData.append('description', description);
 		formData.append('categoryId', categoryId);
+		formData.append('subCategoryId', subCategoryId);
 		formData.append('condition', condition);
 		formData.append('inventoryThreshold', inventoryThreshold);
 		formData.append('availability', availability);

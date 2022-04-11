@@ -16,7 +16,7 @@ const Sidebar = ({ toggled, handleDrawerToggle }) => {
 		dispatch(logOut());
 	};
 
-	console.log(auth?.user);
+	// console.log(auth?.user);
 
 	return (
 		<>

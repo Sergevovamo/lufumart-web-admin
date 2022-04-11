@@ -4,6 +4,7 @@ import {
 	USER_LOADING,
 	AUTH_USER,
 	GET_USERS,
+	CREATE_USER,
 	LOGIN_SUCCESS,
 	LOGOUT_SUCCESS,
 	REGISTER_SUCCESS,
@@ -19,6 +20,7 @@ import {
 } from './error-actions';
 
 const USERS_AUTH = 'https://api-v1.lufumart.com/api/v1/auth';
+const ADMIN_USER_AUTH = 'https://api-v1.lufumart.com/api/v1/admin/auth';
 
 // Setup config headers and token
 export const tokenConfig = () => {
@@ -217,6 +219,47 @@ export const getUsers = (payload) => async (dispatch) => {
 		toast.error('Error while fetching users!');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'GET_USERS')
+		);
+	}
+};
+
+export const adminCreateUser = (payload) => async (dispatch) => {
+	const token = tokenConfig();
+	const { name, email, phone, gender, role, password, password_confirmation } =
+		payload;
+
+	try {
+		// Request body
+		const body = JSON.stringify({
+			name,
+			email,
+			phone,
+			gender,
+			role,
+			password,
+			password_confirmation,
+		});
+
+		const response = await axios.post(
+			`${ADMIN_USER_AUTH}/create-user`,
+			body,
+			token
+		);
+		const data = await response.data;
+
+		if (data) {
+			dispatch({ type: USER_LOADING });
+			await dispatch({
+				type: CREATE_USER,
+				payload: data,
+			});
+			toast.success(`Success! New user registered.`);
+		}
+		dispatch(clearErrors());
+	} catch (error) {
+		toast.error(`Error while creating user!`);
+		dispatch(
+			returnErrors(error.response.data, error.response.status, 'CREATE_USER')
 		);
 	}
 };

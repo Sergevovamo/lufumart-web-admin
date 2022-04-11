@@ -13,6 +13,8 @@ export const RESET_FAIL = 'reset_fail';
 export const GET_ERRORS = 'get_errors';
 export const CLEAR_ERRORS = 'clear_errors';
 
+export const CREATE_USER = 'create_user';
+
 export const PRODUCT_LOADING = 'product_loading';
 export const POST_PRODUCT_CATEGORY = 'post_product_category';
 export const GET_PRODUCT_CATEGORY = 'get_product_category';

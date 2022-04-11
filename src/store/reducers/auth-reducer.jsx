@@ -7,6 +7,7 @@ import {
 	LOGIN_FAIL,
 	LOGOUT_SUCCESS,
 	REGISTER_SUCCESS,
+	CREATE_USER,
 	RESET_PASSWORD_SUCCESS,
 	RESET_FAIL,
 	REGISTER_FAIL,
@@ -41,6 +42,7 @@ export default function AuthReducer(state = initialState, action) {
 				isLoading: false,
 				users: action.payload,
 			};
+		case CREATE_USER:
 		case LOGIN_SUCCESS:
 		case REGISTER_SUCCESS:
 			return {

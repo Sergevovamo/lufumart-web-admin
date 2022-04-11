@@ -25,7 +25,7 @@ import {
 	CircularProgress,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { getUsers, registerUser } from '../../store/actions/auth-actions';
+import { getUsers, adminCreateUser } from '../../store/actions/auth-actions';
 import { useForm } from 'react-hook-form';
 import useTable from '../../utils/useTable';
 import styles from '../../css/Customers.module.css';
@@ -36,12 +36,13 @@ const Customers = () => {
 	const dispatch = useDispatch();
 
 	let users = useSelector((state) => state.auth.users?.customers);
-	let isLoading = useSelector((state) => state.auth.users?.isLoading);
+	let isLoading = useSelector((state) => state.auth?.isLoading);
 
 	const [openPopup, setOpenPopup] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);
-	const [selectedRole, setSelectedRole] = useState('Female');
+	const [selectedRole, setSelectedRole] = useState('Customer');
+	const [selectedGender, setSelectedGender] = useState('Female');
 
 	const [filteredSearch, setFilteredSearch] = useState({
 		fn: (items) => {
@@ -94,6 +95,10 @@ const Customers = () => {
 		setSelectedRole(event.target.value);
 	};
 
+	const handleChangeGender = (event) => {
+		setSelectedGender(event.target.value);
+	};
+
 	const handleClickOpen = () => {
 		setOpenPopup(true);
 	};
@@ -109,7 +114,8 @@ const Customers = () => {
 		e.preventDefault();
 		setButtonLoading(true);
 
-		dispatch(registerUser(data));
+		await dispatch(adminCreateUser(data));
+		await dispatch(getUsers());
 
 		setButtonLoading(false);
 		handleCloseDialog();
@@ -261,15 +267,35 @@ const Customers = () => {
 						/>
 
 						<TextField
-							{...register('role', {
+							{...register('gender', {
 								required: 'Gender is required!',
 							})}
+							style={{ marginBottom: '.8rem' }}
 							fullWidth
 							select
 							label="Gender"
+							value={selectedGender}
+							onChange={handleChangeGender}
+							helperText="Please select user gender"
+						>
+							{gender.map((option) => (
+								<MenuItem key={option.value} value={option.value}>
+									{option.label}
+								</MenuItem>
+							))}
+						</TextField>
+
+						<TextField
+							{...register('role', {
+								required: 'Role is required!',
+							})}
+							style={{ marginBottom: '.8rem' }}
+							fullWidth
+							select
+							label="Role"
 							value={selectedRole}
 							onChange={handleChange}
-							helperText="Please select user gender"
+							helperText="Please select user role"
 						>
 							{roles.map((option) => (
 								<MenuItem key={option.value} value={option.value}>
@@ -330,7 +356,7 @@ const Customers = () => {
 
 export default Customers;
 
-const roles = [
+const gender = [
 	{
 		value: 'Male',
 		label: 'Male',
@@ -338,6 +364,13 @@ const roles = [
 	{
 		value: 'Female',
 		label: 'Female',
+	},
+];
+
+const roles = [
+	{
+		value: 'Customer',
+		label: 'Customer',
 	},
 ];
 

@@ -97,16 +97,18 @@ const Sellers = () => {
 							const { id, name, email, total, status, date } = order;
 							return (
 								<Fragment key={id}>
-									<TableRow
-										sx={{
-											'&:last-child td, &:last-child th': { border: 0 },
-										}}
-									>
-										<TableCell className={styles.seller_details}>
-											<TableCell className={styles.image_header_1}>
+									<TableRow>
+										<TableCell>
+											<TableCell
+												sx={{ borderBottom: 'none' }}
+												className={styles.image_header_1}
+											>
 												<img src="" alt="" />
 											</TableCell>
-											<TableCell className={styles.seller_info}>
+											<TableCell
+												sx={{ borderBottom: 'none' }}
+												className={styles.seller_info}
+											>
 												<p>{name}</p>
 												<p>Seller ID #{id}</p>
 											</TableCell>

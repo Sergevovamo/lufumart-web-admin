@@ -92,11 +92,7 @@ const SellerProducts = () => {
 
 								return (
 									<Fragment key={_id}>
-										<TableRow
-											sx={{
-												'&:last-child td, &:last-child th': { border: 0 },
-											}}
-										>
+										<TableRow>
 											<TableCell>
 												<img
 													style={{ width: '50px' }}
@@ -140,6 +136,7 @@ const SellerProducts = () => {
 						)}
 					</TableBody>
 				</CustomTable>
+				<CustomPagination />
 			</TableContainer>
 		</div>
 	);

@@ -132,11 +132,7 @@ const Products = () => {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						<TableRow
-							sx={{
-								'&:last-child td, &:last-child th': { border: 0 },
-							}}
-						>
+						<TableRow>
 							<TableCell>Image</TableCell>
 							<TableCell>Baby Shoes</TableCell>
 							<TableCell align="left">This is a premium baby shoe</TableCell>
@@ -170,11 +166,7 @@ const Products = () => {
 
 								return (
 									<Fragment key={_id}>
-										<TableRow
-											sx={{
-												'&:last-child td, &:last-child th': { border: 0 },
-											}}
-										>
+										<TableRow>
 											<TableCell>
 												<img
 													style={{ width: '50px' }}

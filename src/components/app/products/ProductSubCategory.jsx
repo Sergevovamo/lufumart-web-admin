@@ -216,11 +216,7 @@ const ProductSubCategory = () => {
 
 								return (
 									<Fragment key={_id}>
-										<TableRow
-											sx={{
-												'&:last-child td, &:last-child th': { border: 0 },
-											}}
-										>
+										<TableRow>
 											<TableCell>{name}</TableCell>
 											<TableCell align="left">{description}</TableCell>
 											<TableCell align="left">{category?.name}</TableCell>

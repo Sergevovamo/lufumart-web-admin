@@ -239,6 +239,7 @@ export const adminCreateUser = (payload) => async (dispatch) => {
 			password,
 			password_confirmation,
 		});
+		console.log(body);
 
 		const response = await axios.post(
 			`${ADMIN_USER_AUTH}/create-user`,
@@ -255,8 +256,9 @@ export const adminCreateUser = (payload) => async (dispatch) => {
 			});
 			toast.success(`Success! New user registered.`);
 		}
-		dispatch(clearErrors());
+		// dispatch(clearErrors());
 	} catch (error) {
+		console.log(error);
 		toast.error(`Error while creating user!`);
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'CREATE_USER')

@@ -243,7 +243,7 @@ const Customers = () => {
 
 						<TextField
 							{...register('phone', {
-								required: 'Password is required!',
+								required: 'Phone is required!',
 								pattern: {
 									value: /^(\+243|0)[1-9]\d{8}$/i,
 									message: 'Please enter a valid mobile number',

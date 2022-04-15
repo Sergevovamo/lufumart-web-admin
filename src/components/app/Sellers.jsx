@@ -25,7 +25,7 @@ import {
 	CircularProgress,
 } from '@mui/material';
 import { format } from 'date-fns';
-import { getUsers, adminCreateUser } from '../../store/actions/auth-actions';
+import { getSellers, adminCreateUser } from '../../store/actions/auth-actions';
 import { useForm } from 'react-hook-form';
 import useTable from '../../utils/useTable';
 import styles from '../../css/Sellers.module.css';
@@ -35,7 +35,7 @@ const Sellers = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	let users = useSelector((state) => state.auth.users?.customers);
+	let sellers = useSelector((state) => state.auth.sellers?.sellers);
 	let isLoading = useSelector((state) => state.auth?.isLoading);
 
 	const [openPopup, setOpenPopup] = useState(false);
@@ -57,7 +57,7 @@ const Sellers = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(data, columns, filteredSearch);
+	} = useTable(sellers, columns, filteredSearch);
 
 	const {
 		register,
@@ -88,7 +88,7 @@ const Sellers = () => {
 	};
 
 	useEffect(() => {
-		dispatch(getUsers());
+		dispatch(getSellers());
 	}, []);
 
 	const handleChange = (event) => {
@@ -112,7 +112,7 @@ const Sellers = () => {
 		setButtonLoading(true);
 
 		await dispatch(adminCreateUser(data));
-		await dispatch(getUsers());
+		await dispatch(getSellers());
 
 		setButtonLoading(false);
 		handleCloseDialog();
@@ -137,12 +137,12 @@ const Sellers = () => {
 						marginRight: '1rem',
 					}}
 				>
-					<h3>{recordsAfterPagingAndSorting()?.length} Sellers</h3>
+					<h3>{sellers?.length} Sellers</h3>
 				</div>
 				<CustomTable>
 					<CustomHead />
 					<TableBody>
-						{recordsAfterPagingAndSorting()?.map((order) => {
+						{/* {recordsAfterPagingAndSorting()?.map((order) => {
 							const { id, name, email, total, status, date } = order;
 							return (
 								<Fragment key={id}>
@@ -175,7 +175,59 @@ const Sellers = () => {
 									</TableRow>
 								</Fragment>
 							);
-						})}
+						})} */}
+						{sellers?.length > 0 ? (
+							recordsAfterPagingAndSorting()?.map((user, index) => {
+								const {
+									_id,
+									name,
+									email,
+									phone,
+									gender,
+									isUserActive,
+									createdAt,
+								} = user;
+
+								return (
+									<Fragment key={index}>
+										<TableRow>
+											<TableCell>{name}</TableCell>
+											<TableCell>{email}</TableCell>
+											<TableCell>{phone}</TableCell>
+											<TableCell>{gender}</TableCell>
+											<TableCell>
+												{isUserActive ? 'active' : 'inactive'}
+											</TableCell>
+											{/* <TableCell>
+												{format(
+													new Date(createdAt),
+													"do MMM yyyy, h:mm:ss aaaaa'm'"
+												)}
+											</TableCell> */}
+											<TableCell></TableCell>
+										</TableRow>
+									</Fragment>
+								);
+							})
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={12}
+									style={{ padding: '1rem', textAlign: 'center' }}
+								>
+									{isLoading ? (
+										<CircularProgress
+											variant="indeterminate"
+											disableShrink
+											size={25}
+											thickness={4}
+										/>
+									) : (
+										<p>You have no sellers</p>
+									)}
+								</TableCell>
+							</TableRow>
+						)}
 					</TableBody>
 				</CustomTable>
 				<CustomPagination />

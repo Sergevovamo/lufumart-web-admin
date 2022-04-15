@@ -4,6 +4,7 @@ import {
 	USER_LOADING,
 	AUTH_USER,
 	GET_USERS,
+	GET_SELLERS,
 	CREATE_USER,
 	LOGIN_SUCCESS,
 	LOGOUT_SUCCESS,
@@ -21,6 +22,7 @@ import {
 
 const USERS_AUTH = 'https://api-v1.lufumart.com/api/v1/auth';
 const ADMIN_USER_AUTH = 'https://api-v1.lufumart.com/api/v1/admin/auth';
+const SELLERS_AUTH = 'https://api-v1.lufumart.com/api/v1/seller/auth/';
 
 // Setup config headers and token
 export const tokenConfig = () => {
@@ -203,6 +205,7 @@ export const forgotPassword = (payload) => async (dispatch) => {
 	}
 };
 
+// Get customers
 export const getUsers = (payload) => async (dispatch) => {
 	const token = tokenConfig();
 
@@ -219,6 +222,28 @@ export const getUsers = (payload) => async (dispatch) => {
 		toast.error('Error while fetching users!');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'GET_USERS')
+		);
+	}
+};
+
+// Get sellers
+export const getSellers = (payload) => async (dispatch) => {
+	const token = tokenConfig();
+
+	try {
+		dispatch({ type: USER_LOADING });
+		const response = await axios.get(`${SELLERS_AUTH}`, token);
+		const data = await response.data;
+		// console.log(data);
+
+		await dispatch({
+			type: GET_SELLERS,
+			payload: data,
+		});
+	} catch (error) {
+		toast.error('Error while fetching sellers!');
+		dispatch(
+			returnErrors(error.response.data, error.response.status, 'GET_SELLERS')
 		);
 	}
 };

@@ -24,6 +24,8 @@ export const DELETE_PRODUCT_CATEGORY = 'delete_product_category';
 export const GET_PRODUCT_SUB_CATEGORIES = 'get_product_sub_categories';
 export const POST_PRODUCT_SUB_CATEGORY = 'post_product_sub_category';
 
+export const GET_SELLERS = 'get_sellers';
+
 export const POST_PRODUCT = 'post_product';
 export const GET_PRODUCT = 'get_product';
 export const GET_PRODUCTS = 'get_products';

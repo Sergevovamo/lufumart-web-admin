@@ -1,6 +1,7 @@
 import {
 	AUTH_USER,
 	GET_USERS,
+	GET_SELLERS,
 	USER_LOADING,
 	AUTH_ERROR,
 	LOGIN_SUCCESS,
@@ -19,6 +20,7 @@ const initialState = {
 	isLoading: false,
 	user: null,
 	users: null,
+	sellers: null,
 };
 
 export default function AuthReducer(state = initialState, action) {
@@ -41,6 +43,13 @@ export default function AuthReducer(state = initialState, action) {
 				isAuthenticated: true,
 				isLoading: false,
 				users: action.payload,
+			};
+		case GET_SELLERS:
+			return {
+				...state,
+				isAuthenticated: true,
+				isLoading: false,
+				sellers: action.payload,
 			};
 		case CREATE_USER:
 		case LOGIN_SUCCESS:

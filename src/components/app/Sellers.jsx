@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
 	Button,
 	Paper,
+	Popover,
+	Tooltip,
 	Table,
 	MenuItem,
 	TableBody,
@@ -24,6 +26,8 @@ import {
 	Autocomplete,
 	CircularProgress,
 } from '@mui/material';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import MoreVert from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
 import { getSellers, adminCreateUser } from '../../store/actions/auth-actions';
 import { useForm } from 'react-hook-form';
@@ -142,40 +146,6 @@ const Sellers = () => {
 				<CustomTable>
 					<CustomHead />
 					<TableBody>
-						{/* {recordsAfterPagingAndSorting()?.map((order) => {
-							const { id, name, email, total, status, date } = order;
-							return (
-								<Fragment key={id}>
-									<TableRow>
-										<TableCell>
-											<Table>
-												<TableBody>
-													<TableRow>
-														<TableCell
-															sx={{ borderBottom: 'none' }}
-															className={styles.image_header_1}
-														>
-															<img src="" alt="" />
-														</TableCell>
-														<TableCell
-															sx={{ borderBottom: 'none' }}
-															className={styles.seller_info}
-														>
-															<p>{name}</p>
-															<p>Seller ID #{id}</p>
-														</TableCell>
-													</TableRow>
-												</TableBody>
-											</Table>
-										</TableCell>
-										<TableCell>{email}</TableCell>
-										<TableCell>{status}</TableCell>
-										<TableCell>{date}</TableCell>
-										<TableCell></TableCell>
-									</TableRow>
-								</Fragment>
-							);
-						})} */}
 						{sellers?.length > 0 ? (
 							recordsAfterPagingAndSorting()?.map((user, index) => {
 								const {
@@ -191,20 +161,122 @@ const Sellers = () => {
 								return (
 									<Fragment key={index}>
 										<TableRow>
-											<TableCell>{name}</TableCell>
+											<TableCell>
+												<Table>
+													<TableBody>
+														<TableRow>
+															<TableCell
+																sx={{ borderBottom: 'none' }}
+																className={styles.image_header_1}
+															>
+																<img src="" alt="" />
+															</TableCell>
+															<TableCell
+																sx={{ borderBottom: 'none' }}
+																className={styles.seller_info}
+															>
+																<p>{name}</p>
+																<p style={{ color: '#B2B9C1' }}>
+																	Seller ID: #{_id.substring(3, length)}
+																</p>
+															</TableCell>
+														</TableRow>
+													</TableBody>
+												</Table>
+											</TableCell>
 											<TableCell>{email}</TableCell>
 											<TableCell>{phone}</TableCell>
 											<TableCell>{gender}</TableCell>
 											<TableCell>
-												{isUserActive ? 'active' : 'inactive'}
+												{isUserActive ? 'Active' : 'Inactive'}
 											</TableCell>
-											{/* <TableCell>
+											<TableCell>
 												{format(
 													new Date(createdAt),
 													"do MMM yyyy, h:mm:ss aaaaa'm'"
 												)}
-											</TableCell> */}
-											<TableCell></TableCell>
+											</TableCell>
+											<TableCell>
+												<PopupState
+													variant="popover"
+													popupId="demo-popup-popover"
+												>
+													{(popupState) => (
+														<>
+															<IconButton {...bindTrigger(popupState)}>
+																<Tooltip
+																	title="More actions"
+																	placement="right"
+																	arrow
+																>
+																	<MoreVert />
+																</Tooltip>
+															</IconButton>
+															<Popover
+																{...bindPopover(popupState)}
+																anchorOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																transformOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																elevation={1}
+															>
+																<Typography
+																	sx={{
+																		display: 'flex',
+																		flexDirection: 'column',
+																		padding: 2,
+																	}}
+																>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																		}}
+																		sx={{ padding: 2 }}
+																	>
+																		View
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Update
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Suspend
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Unsuspend
+																	</Link>
+																</Typography>
+															</Popover>
+														</>
+													)}
+												</PopupState>
+											</TableCell>
 										</TableRow>
 									</Fragment>
 								);
@@ -404,11 +476,19 @@ const roles = [
 const COLUMNS = [
 	{
 		id: 'name',
-		label: 'Seller',
+		label: 'Seller Name',
 	},
 	{
 		id: 'email',
 		label: 'Email',
+	},
+	{
+		id: 'phone',
+		label: 'Phone',
+	},
+	{
+		id: 'gender',
+		label: 'Gender',
 	},
 	{
 		id: 'status',

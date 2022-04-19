@@ -338,7 +338,7 @@ const ProductCategory = () => {
 							multiline
 							rows={4}
 							autoComplete="off"
-							label="Product Category description"
+							label="Product category description"
 							placeholder="Type your description"
 							error={errors?.description ? true : false}
 							helperText={errors?.description?.message}

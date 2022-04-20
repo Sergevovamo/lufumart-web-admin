@@ -1,0 +1,13 @@
+.orders_container {
+	margin: 5rem 15px;
+}
+.order_details {
+	margin-top: 1rem;
+	padding: 15px 25px;
+	min-height: 50vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}

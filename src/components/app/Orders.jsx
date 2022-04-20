@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useMemo, Fragment } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
 import {
 	Button,
 	Paper,
+	Popover,
+	Tooltip,
 	Table,
 	MenuItem,
 	TableBody,
@@ -22,6 +26,8 @@ import {
 	Autocomplete,
 	CircularProgress,
 } from '@mui/material';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
+import MoreVert from '@mui/icons-material/MoreVert';
 import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 import useTable from '../../utils/useTable';
@@ -108,7 +114,87 @@ const Orders = () => {
 										<TableCell>${total}</TableCell>
 										<TableCell>{status}</TableCell>
 										<TableCell>{date}</TableCell>
-										<TableCell></TableCell>
+										<TableCell>
+											<PopupState
+												variant="popover"
+												popupId="demo-popup-popover"
+											>
+												{(popupState) => (
+													<>
+														<IconButton {...bindTrigger(popupState)}>
+															<Tooltip
+																title="More actions"
+																placement="right"
+																arrow
+															>
+																<MoreVert />
+															</Tooltip>
+														</IconButton>
+														<Popover
+															{...bindPopover(popupState)}
+															anchorOrigin={{
+																vertical: 'top',
+																horizontal: 'right',
+															}}
+															transformOrigin={{
+																vertical: 'top',
+																horizontal: 'right',
+															}}
+															elevation={1}
+														>
+															<Typography
+																sx={{
+																	display: 'flex',
+																	flexDirection: 'column',
+																	padding: 2,
+																}}
+															>
+																<Link
+																	to="/order-details"
+																	style={{
+																		textDecoration: 'none',
+																		color: '#000',
+																	}}
+																	sx={{ padding: 2 }}
+																>
+																	View
+																</Link>
+																<Link
+																	to="#"
+																	style={{
+																		textDecoration: 'none',
+																		color: '#000',
+																		marginTop: 5,
+																	}}
+																>
+																	Update
+																</Link>
+																<Link
+																	to="#"
+																	style={{
+																		textDecoration: 'none',
+																		color: '#000',
+																		marginTop: 5,
+																	}}
+																>
+																	Suspend
+																</Link>
+																<Link
+																	to="#"
+																	style={{
+																		textDecoration: 'none',
+																		color: '#000',
+																		marginTop: 5,
+																	}}
+																>
+																	Unsuspend
+																</Link>
+															</Typography>
+														</Popover>
+													</>
+												)}
+											</PopupState>
+										</TableCell>
 									</TableRow>
 								</Fragment>
 							);
@@ -130,7 +216,7 @@ const COLUMNS = [
 	},
 	{
 		id: 'name',
-		label: 'Name',
+		label: 'Customer Name',
 	},
 	{
 		id: 'email',

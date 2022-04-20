@@ -18,6 +18,8 @@ import {
 	PopularProducts,
 	// Seller details
 	SellerProfile,
+	// Order details
+	OrderDetail,
 } from './components/app';
 import { PrivateRoute } from './middleware';
 import { ForgotPassword, Login, PageNotFound } from './components';
@@ -133,6 +135,15 @@ const App = () => {
 						element={
 							<PrivateRoute>
 								<SellerProfile />
+							</PrivateRoute>
+						}
+					/>
+					{/* Order details */}
+					<Route
+						path="order-details"
+						element={
+							<PrivateRoute>
+								<OrderDetail />
 							</PrivateRoute>
 						}
 					/>

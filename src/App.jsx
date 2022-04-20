@@ -16,6 +16,8 @@ import {
 	ProductCategory,
 	ProductSubCategory,
 	PopularProducts,
+	// Seller details
+	SellerProfile,
 } from './components/app';
 import { PrivateRoute } from './middleware';
 import { ForgotPassword, Login, PageNotFound } from './components';
@@ -35,6 +37,7 @@ const App = () => {
 						</PrivateRoute>
 					}
 				>
+					{/* Sidebar details */}
 					<Route
 						index
 						element={
@@ -83,6 +86,7 @@ const App = () => {
 							</PrivateRoute>
 						}
 					/>
+					{/* Product details */}
 					<Route
 						path="my-products"
 						element={
@@ -120,6 +124,15 @@ const App = () => {
 						element={
 							<PrivateRoute>
 								<SellerProducts />
+							</PrivateRoute>
+						}
+					/>
+					{/* Seller details */}
+					<Route
+						path="sellers-profile"
+						element={
+							<PrivateRoute>
+								<SellerProfile />
 							</PrivateRoute>
 						}
 					/>

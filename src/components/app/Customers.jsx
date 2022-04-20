@@ -38,8 +38,6 @@ const Customers = () => {
 	let users = useSelector((state) => state.auth.users?.customers);
 	let isLoading = useSelector((state) => state.auth?.isLoading);
 
-	console.log(users);
-
 	const [openPopup, setOpenPopup] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);

@@ -1,0 +1,101 @@
+.sellers_container {
+	margin: 5rem 15px;
+}
+
+.seller_details {
+	margin-top: 1rem;
+	/* padding: 15px 25px; */
+	min-height: 50vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.upperHeader {
+	position: relative;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+	height: 20vh;
+	background: #f68b1e;
+}
+.sellerLogoCard {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 50px;
+	left: 25px;
+	width: 200px;
+	height: 190px;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.sellerInfo {
+	padding-top: 20px;
+	padding-left: 20vw;
+	min-height: 20vh;
+	border-bottom: 1px solid #dbdddf;
+}
+.sellerInfoLower {
+	display: flex;
+	min-height: 20vh;
+}
+.sellerSales {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin: 1rem 0 1rem 1rem;
+	width: 150px;
+	min-height: 130px;
+	border-radius: 7px;
+	border: 1px solid #dbdddf;
+}
+.sellerContact {
+	margin-top: 1rem;
+	margin-left: 1rem;
+	min-height: 130px;
+	width: 15%;
+}
+
+.sellerProducts {
+	margin-top: 1rem;
+	padding: 15px 25px;
+	min-height: 50vh;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.products {
+	margin-top: 1rem;
+	display: flex;
+	gap: 1rem;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+.productCard {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 0.5rem;
+	height: 200px;
+	width: 200px;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1);
+	border: 1px solid #dbdddf;
+}
+.productImageCard {
+	width: 180px;
+}
+.productImage {
+	aspect-ratio: 16 / 9;
+	width: 100%;
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 // import Profile from '../../assets/images/profile.jpg';
 import { logOut } from '../../store/actions/auth-actions';
@@ -35,10 +35,10 @@ const Sidebar = ({ toggled, handleDrawerToggle }) => {
 				</div>
 				<ul>
 					<li>
-						<Link to="/">
+						<NavLink to="/">
 							<i className="bx bx-grid-alt"></i>
 							<span className="links_name">Home</span>
-						</Link>
+						</NavLink>
 						<span className="tooltip">Home</span>
 					</li>
 					<li>

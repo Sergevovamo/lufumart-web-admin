@@ -232,7 +232,7 @@ const Sellers = () => {
 																	}}
 																>
 																	<Link
-																		to="#"
+																		to="/sellers-profile"
 																		style={{
 																			textDecoration: 'none',
 																			color: '#000',

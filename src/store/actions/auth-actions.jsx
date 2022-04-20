@@ -264,7 +264,6 @@ export const adminCreateUser = (payload) => async (dispatch) => {
 			password,
 			password_confirmation,
 		});
-		console.log(body);
 
 		const response = await axios.post(
 			`${ADMIN_USER_AUTH}/create-user`,

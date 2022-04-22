@@ -13,8 +13,10 @@ import {
 	TableContainer,
 	TableHead,
 	TableRow,
+	TextField,
 	Paper,
 } from '@mui/material';
+import { useForm } from 'react-hook-form';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import styles from '../../../css/OrderDetails.module.css';
 
@@ -26,6 +28,17 @@ const OrderDetail = () => {
 	const handleChange = (event) => {
 		setStatus(event.target.value);
 	};
+
+	const {
+		register,
+		getValues,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		mode: 'all',
+		shouldUnregister: true,
+		shouldFocusError: true,
+	});
 
 	return (
 		<div className={styles.orders_container}>
@@ -211,6 +224,53 @@ const OrderDetail = () => {
 					<div>
 						<div className={styles.paymentInfo}>
 							<h4>Payment info</h4>
+							<div className={styles.paymentInfoHeader}>
+								<div>
+									<img
+										className={styles.paymentMethodImage}
+										src="https://res.cloudinary.com/lufumart-ecommerce/image/upload/q_auto/v1650553867/payment-method/mastercard_PNG3_ax0ubj.png"
+										alt="mastercard"
+									/>
+								</div>
+								<h4
+									style={{
+										paddingLeft: '.5rem',
+										color: '#141432',
+										fontWeight: '500',
+									}}
+								>
+									Master Card **** **** 4768
+								</h4>
+							</div>
+							<div className={styles.paymentInfoHeader}>
+								<h4 style={{ color: '#141432', fontWeight: '500' }}>
+									Business name: Grand Market LLC
+								</h4>
+							</div>
+							<div className={styles.paymentInfoHeader3}>
+								<h4 style={{ color: '#141432', fontWeight: '500' }}>
+									Phone: +1 (800) 555-154-52
+								</h4>
+							</div>
+						</div>
+						<div>
+							<TextField
+								{...register('notes', {
+									required: 'Notes is required!',
+									shouldFocus: true,
+								})}
+								sx={{ marginBottom: '.8rem', marginTop: '.8rem' }}
+								name="notes"
+								fullWidth
+								multiline
+								rows={4}
+								autoComplete="off"
+								label="Notes"
+								placeholder="Type some notes"
+								error={errors?.notes ? true : false}
+								helperText={errors?.notes?.message}
+							/>
+							<Button variant="contained">Save</Button>
 						</div>
 					</div>
 				</div>

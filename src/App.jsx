@@ -170,5 +170,8 @@ const theme = createTheme({
 		secondary: {
 			main: '#f68b1e',
 		},
+		default: {
+			main: '#F8F9FA',
+		},
 	},
 });

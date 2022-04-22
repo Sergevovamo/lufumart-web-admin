@@ -63,17 +63,17 @@ const Sidebar = ({ toggled, handleDrawerToggle }) => {
 						</NavLink>
 						<span className="tooltip">Orders</span>
 					</li>
-					{/* <li>
+					<li>
 						<NavLink
 							to="/wallet"
 							activeclassname="active"
 							onClick={handleClick}
 						>
 							<i className="bx bx-wallet-alt"></i>
-							<span className="links_name">Wallet</span>
+							<span className="links_name">Transactions</span>
 						</NavLink>
-						<span className="tooltip">Wallet</span>
-					</li> */}
+						<span className="tooltip">Transactions</span>
+					</li>
 					<li>
 						<NavLink
 							to="/sellers"

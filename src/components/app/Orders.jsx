@@ -81,7 +81,7 @@ const Orders = () => {
 		<div className={styles.orders_container}>
 			<div className={styles.orders_header}>
 				<h4 style={styles.title}>Orders</h4>
-				<Button variant="contained">Create New</Button>
+				{/* <Button variant="contained">Create New</Button> */}
 			</div>
 			<TableContainer component={Paper} className={styles.orders_content}>
 				<div

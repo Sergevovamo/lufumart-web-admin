@@ -28,10 +28,10 @@ import { format } from 'date-fns';
 import { getUsers, adminCreateUser } from '../../store/actions/auth-actions';
 import { useForm } from 'react-hook-form';
 import useTable from '../../utils/useTable';
-import styles from '../../css/Customers.module.css';
+import styles from '../../css/Staff.module.css';
 import AdornedButton from '../../utils/AdornedButton';
 
-const Customers = () => {
+const Staff = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
@@ -41,7 +41,7 @@ const Customers = () => {
 	const [openPopup, setOpenPopup] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);
-	const [selectedRole, setSelectedRole] = useState('Customer');
+	const [selectedRole, setSelectedRole] = useState('Staff');
 	const [selectedGender, setSelectedGender] = useState('Female');
 
 	const [filteredSearch, setFilteredSearch] = useState({
@@ -122,9 +122,9 @@ const Customers = () => {
 	};
 
 	return (
-		<div className={styles.customers_container}>
-			<div className={styles.customers_header}>
-				<h4 style={styles.title}>Customers list</h4>
+		<div className={styles.staff_container}>
+			<div className={styles.staff_header}>
+				<h4>Staff list</h4>
 				<Button variant="contained" onClick={handleClickOpen}>
 					Create New
 				</Button>
@@ -140,7 +140,7 @@ const Customers = () => {
 						marginRight: '1rem',
 					}}
 				>
-					<h3>{users?.length} Customers</h3>
+					<h3>{users?.length} Staff</h3>
 				</div>
 				<CustomTable>
 					<CustomHead />
@@ -192,7 +192,7 @@ const Customers = () => {
 											thickness={4}
 										/>
 									) : (
-										<p>You have no customers</p>
+										<p>You have no staff</p>
 									)}
 								</TableCell>
 							</TableRow>
@@ -202,23 +202,23 @@ const Customers = () => {
 				<CustomPagination />
 			</TableContainer>
 			<Dialog open={openPopup} onClose={handleCloseDialog}>
-				<DialogTitle>Add Customer</DialogTitle>
+				<DialogTitle>Add Staff</DialogTitle>
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<DialogContent>
 						<DialogContentText style={{ marginBottom: '.8rem' }}>
-							Create a new customer
+							Create a new staff
 						</DialogContentText>
 						<TextField
 							autoFocus
 							{...register('name', {
-								required: 'Customer name is required!',
+								required: 'Staff name is required!',
 								shouldFocus: true,
 							})}
 							style={{ marginBottom: '.8rem' }}
 							name="name"
 							fullWidth
 							autoComplete="off"
-							label="Customer name"
+							label="Staff name"
 							placeholder="John Doe"
 							error={errors?.name ? true : false}
 							helperText={errors?.name?.message}
@@ -350,7 +350,7 @@ const Customers = () => {
 	);
 };
 
-export default Customers;
+export default Staff;
 
 const gender = [
 	{
@@ -365,8 +365,8 @@ const gender = [
 
 const roles = [
 	{
-		value: 'Customer',
-		label: 'Customer',
+		value: 'Staff',
+		label: 'Staff',
 	},
 ];
 

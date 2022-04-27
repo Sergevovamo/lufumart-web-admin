@@ -96,6 +96,13 @@ const Sidebar = ({ toggled, handleDrawerToggle }) => {
 						</NavLink>
 						<span className="tooltip">Customers</span>
 					</li>
+					<li>
+						<NavLink to="/staff" activeclassname="active" onClick={handleClick}>
+							<i class="bx bxs-user-account"></i>
+							<span className="links_name">Staff</span>
+						</NavLink>
+						<span className="tooltip">Staff</span>
+					</li>
 				</ul>
 				<div className="profile_content">
 					<div className="profile_dashboard">

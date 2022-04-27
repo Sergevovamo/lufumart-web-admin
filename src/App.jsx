@@ -10,6 +10,7 @@ import {
 	Wallet,
 	Sellers,
 	Customers,
+	Staff,
 	// Products components
 	MyProducts,
 	SellerProducts,
@@ -85,6 +86,14 @@ const App = () => {
 						element={
 							<PrivateRoute>
 								<Customers />
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path="staff"
+						element={
+							<PrivateRoute>
+								<Staff />
 							</PrivateRoute>
 						}
 					/>

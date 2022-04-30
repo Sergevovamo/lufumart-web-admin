@@ -11,6 +11,7 @@ import {
 	Sellers,
 	Customers,
 	Staff,
+	Profile,
 	// Products components
 	MyProducts,
 	SellerProducts,
@@ -94,6 +95,14 @@ const App = () => {
 						element={
 							<PrivateRoute>
 								<Staff />
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path="profile"
+						element={
+							<PrivateRoute>
+								<Profile />
 							</PrivateRoute>
 						}
 					/>

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { IconButton, Badge, ClickAwayListener } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 const Navbar = ({
 	searchToggled,
@@ -59,15 +60,13 @@ const Navbar = ({
 						<ClickAwayListener onClickAway={handleClickAway}>
 							<div className="menu-container">
 								<IconButton onClick={onClick}>
-									<SettingsIcon style={{ color: '#fff' }} />
+									{/* <SettingsIcon style={{ color: '#fff' }} /> */}
+									<AccountCircleOutlinedIcon style={{ color: '#fff' }} />
 								</IconButton>
 								<div className={`menu ${open ? 'active' : 'inactive'}`}>
 									<ul>
 										<li>
-											<Link to="#">Profile</Link>
-										</li>
-										<li>
-											<Link to="#">Settings</Link>
+											<Link to="/profile">Profile</Link>
 										</li>
 									</ul>
 								</div>

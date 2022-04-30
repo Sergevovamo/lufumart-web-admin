@@ -1,0 +1,28 @@
+.profile_container {
+	margin: 5rem 15px;
+}
+.profile_header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 5px;
+	width: 100%;
+}
+.profile_header h4 {
+	font-size: 30px;
+}
+.user_header {
+	display: flex;
+	align-items: center;
+}
+.user_desc {
+	padding: 15px;
+}
+.image_header_1 {
+	margin-top: 1rem;
+	padding: 15px;
+	width: 70px;
+	height: 70px;
+	border-radius: 50%;
+	background: #d6e1fb;
+}

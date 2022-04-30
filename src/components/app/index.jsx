@@ -10,6 +10,7 @@ export { default as Wallet } from './Wallet';
 export { default as Sellers } from './Sellers';
 export { default as Customers } from './Customers';
 export { default as Staff } from './Staff';
+export { default as Profile } from './Profile';
 
 export { default as ProductCategory } from './products/ProductCategory';
 export { default as ProductSubCategory } from './products/ProductSubCategory';

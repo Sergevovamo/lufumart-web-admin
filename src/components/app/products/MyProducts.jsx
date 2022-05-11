@@ -71,9 +71,24 @@ const MyProducts = () => {
 	const [selectedCategory, setSelectedCategory] = useState([]);
 	const [selectedSubCategory, setSelectedSubCategory] = useState([]);
 
-	const [availabilityValue, setAvailabilityValue] = useState(new Date());
+	const [availabilityDate, setAvailabilityDate] = useState(new Date());
 	const [startDateValue, setStartDateValue] = useState(new Date());
 	const [endDateValue, setEndDateValue] = useState(new Date());
+
+	const [salePrice, setSalePrice] = useState(0);
+	const [size, setSize] = useState('0 * 0 * 0');
+
+	const [length, setLength] = useState('0');
+	const [width, setWidth] = useState('0');
+	const [height, setHeight] = useState('0');
+	const [weight, setWeight] = useState('0');
+
+	const [selectedGender, setSelectedGender] = useState('Unisex');
+	const [selectedSizeUnit, setSelectedSizeUnit] = useState('cm');
+	const [selectedWeightUnit, setSelectedWeightUnit] = useState('g');
+	const [selectedAgeGroup, setSelectedAgeGroup] = useState('Child');
+	const [selectedCondition, setSelectedCondition] = useState('Brand New');
+	const [selectedAvailability, setSelectedAvailability] = useState('In Stock');
 
 	const loading = open && options.length === 0;
 	const loadingSub = openSub && optionsSub.length === 0;
@@ -230,8 +245,72 @@ const MyProducts = () => {
 		setOpenPopup(false);
 	};
 
+	const handleChangeCondition = (event) => {
+		setSelectedCondition(event.target.value);
+	};
+
+	const handleChangePrice = (event) => {
+		let price = parseInt(event.target.value);
+		let deliveryFee = price * 0.1;
+		let profit = price * 0.1;
+
+		let newPrice = price + deliveryFee + profit;
+		setSalePrice(newPrice.toFixed(2));
+	};
+
+	const handleChangeWeight = (event) => {
+		setWeight(`${event.target.value} ${selectedWeightUnit}`);
+	};
+
+	const handleChangeLength = (event) => {
+		let productLength = event.target.value;
+
+		setSize(
+			`${productLength}${selectedSizeUnit} * ${width}${selectedSizeUnit} * ${height}${selectedSizeUnit}`
+		);
+		setLength(`${productLength ? productLength : 0}`);
+	};
+
+	const handleChangeWidth = (event) => {
+		let productWidth = event.target.value;
+
+		setSize(
+			`${length}${selectedSizeUnit} * ${productWidth}${selectedSizeUnit} * ${height}${selectedSizeUnit}`
+		);
+		setWidth(`${productWidth ? productWidth : 0}`);
+	};
+
+	const handleChangeHeight = (event) => {
+		let productHeight = event.target.value;
+
+		setSize(
+			`${length}${selectedSizeUnit} * ${width}${selectedSizeUnit} * ${productHeight}${selectedSizeUnit}`
+		);
+		setHeight(`${productHeight ? productHeight : 0}`);
+	};
+
+	const handleChangeGender = (event) => {
+		setSelectedGender(event.target.value);
+	};
+
+	const handleChangeSizeUnit = (event) => {
+		setSelectedSizeUnit(event.target.value);
+	};
+
+	const handleChangeWeightUnit = (event) => {
+		setSelectedWeightUnit(event.target.value);
+	};
+
+	const handleChangeAgeGroup = (event) => {
+		setSelectedAgeGroup(event.target.value);
+	};
+
+	const handleChangeStock = (event) => {
+		setSelectedAvailability(event.target.value);
+	};
+
 	const handleAvailabilityChange = (newValue) => {
-		setAvailabilityValue(newValue);
+		setAvailabilityDate(newValue);
 	};
 
 	const handleStartDateChange = (newValue) => {
@@ -244,17 +323,18 @@ const MyProducts = () => {
 
 	const onSubmit = async (data, e) => {
 		e.preventDefault();
-		setButtonLoading(true);
+		// setButtonLoading(true);
 
 		const {
 			name,
+			model,
 			brand,
 			color,
 			gender,
 			ageGroup,
-			size,
+			// size, use the one from state
 			price,
-			salePrice,
+			// salePrice, use the one from state
 			quantity,
 			description,
 			condition,
@@ -269,13 +349,13 @@ const MyProducts = () => {
 
 		let today = new Date();
 
-		if (availabilityValue < today) {
+		if (availabilityDate < today) {
 			return toast.error(
 				`Error! Availaibility date must be 1 day ahead current date.`
 			);
 		}
 
-		if (startDateValue < availabilityValue) {
+		if (startDateValue < availabilityDate) {
 			return toast.error(
 				`Error! Sale start date can't be less than availability date.`
 			);
@@ -288,10 +368,12 @@ const MyProducts = () => {
 		const newData = {
 			name,
 			brand,
+			model,
 			color,
 			gender,
 			ageGroup,
 			size,
+			weight,
 			price: parseInt(price),
 			salePrice: parseInt(salePrice),
 			quantity: parseInt(quantity),
@@ -302,12 +384,14 @@ const MyProducts = () => {
 			condition,
 			inventoryThreshold: parseInt(inventoryThreshold),
 			availability,
-			availabilityDate: availabilityValue,
+			availabilityDate: availabilityDate,
 			salePriceEffectiveStartDate: startDateValue,
 			salePriceEffectiveEndDate: endDateValue,
 			manufactererPartNumber,
 			globalTradeItemNumber: '',
 		};
+
+		// console.log(newData);
 
 		await dispatch(postProduct(newData));
 		await dispatch(getProducts());
@@ -562,7 +646,7 @@ const MyProducts = () => {
 								style={{ marginBottom: '.8rem' }}
 								name="name"
 								autoComplete="off"
-								label="Product name"
+								label="Product Name"
 								placeholder="Baby shoes"
 								error={errors?.name ? true : false}
 								helperText={errors?.name?.message}
@@ -575,10 +659,18 @@ const MyProducts = () => {
 								style={{ marginBottom: '.8rem' }}
 								name="brand"
 								autoComplete="off"
-								label="Brand name"
+								label="Brand Name"
 								placeholder="Baby converse"
 								error={errors?.brand ? true : false}
 								helperText={errors?.brand?.message}
+							/>
+							<TextField
+								{...register('model')}
+								style={{ marginBottom: '.8rem' }}
+								name="model"
+								autoComplete="off"
+								label="Product Model"
+								placeholder="Gucci"
 							/>
 							<TextField
 								{...register('color', {
@@ -588,89 +680,12 @@ const MyProducts = () => {
 								style={{ marginBottom: '.8rem' }}
 								name="color"
 								autoComplete="off"
-								label="Product color"
-								placeholder="Blue jeans"
+								label="Product Color"
+								placeholder="Blue"
 								error={errors?.color ? true : false}
 								helperText={errors?.color?.message}
 							/>
-							<TextField
-								{...register('gender', {
-									required: 'Product gender is required!',
-									shouldFocus: true,
-								})}
-								style={{ marginBottom: '.8rem' }}
-								name="gender"
-								autoComplete="off"
-								label="Product gender"
-								placeholder="Unisex"
-								error={errors?.gender ? true : false}
-								helperText={errors?.gender?.message}
-							/>
 						</div>
-						<div
-							style={{
-								display: 'flex',
-								justifyContent: 'space-around',
-								flexWrap: 'wrap',
-								marginBottom: '1rem',
-							}}
-						>
-							<TextField
-								{...register('ageGroup', {
-									required: 'Product age group is required!',
-									shouldFocus: true,
-								})}
-								style={{ marginBottom: '.8rem' }}
-								name="ageGroup"
-								autoComplete="off"
-								label="Product age group"
-								placeholder="Child"
-								error={errors?.ageGroup ? true : false}
-								helperText={errors?.ageGroup?.message}
-							/>
-							<TextField
-								{...register('size', {
-									required: 'Product size is required!',
-									shouldFocus: true,
-								})}
-								style={{ marginBottom: '.8rem' }}
-								name="size"
-								autoComplete="off"
-								label="Product size"
-								placeholder="Large"
-								error={errors?.size ? true : false}
-								helperText={errors?.size?.message}
-							/>
-							<TextField
-								{...register('price', {
-									required: 'Product price is required!',
-									shouldFocus: true,
-								})}
-								style={{ marginBottom: '.8rem' }}
-								name="price"
-								type="number"
-								autoComplete="off"
-								label="Product price"
-								placeholder="899"
-								error={errors?.price ? true : false}
-								helperText={errors?.price?.message}
-							/>
-							<TextField
-								{...register('salePrice', {
-									required: 'Product sale price is required!',
-									shouldFocus: true,
-								})}
-								style={{ marginBottom: '.8rem' }}
-								name="salePrice"
-								type="number"
-								autoComplete="off"
-								label="Product sale price"
-								placeholder="800"
-								error={errors?.salePrice ? true : false}
-								helperText={errors?.salePrice?.message}
-							/>
-						</div>
-
 						<div
 							style={{
 								display: 'flex',
@@ -688,24 +703,12 @@ const MyProducts = () => {
 								name="quantity"
 								type="number"
 								autoComplete="off"
-								label="Product quantity"
+								label="Product Quantity"
 								placeholder="80"
 								error={errors?.quantity ? true : false}
 								helperText={errors?.quantity?.message}
 							/>
-							<TextField
-								{...register('condition', {
-									required: 'Product condition is required!',
-									shouldFocus: true,
-								})}
-								style={{ marginBottom: '.8rem' }}
-								name="condition"
-								autoComplete="off"
-								label="Product condition"
-								placeholder="New"
-								error={errors?.condition ? true : false}
-								helperText={errors?.condition?.message}
-							/>
+
 							<TextField
 								{...register('inventoryThreshold', {
 									required: 'Product inventory is required!',
@@ -720,19 +723,261 @@ const MyProducts = () => {
 								error={errors?.inventoryThreshold ? true : false}
 								helperText={errors?.inventoryThreshold?.message}
 							/>
+
 							<TextField
-								{...register('availability', {
-									required: 'Product availability is required!',
+								{...register('price', {
+									required: 'Product price is required!',
 									shouldFocus: true,
 								})}
 								style={{ marginBottom: '.8rem' }}
-								name="availability"
+								name="price"
+								type="number"
 								autoComplete="off"
-								label="Product availability"
-								placeholder="In stock"
-								error={errors?.availability ? true : false}
-								helperText={errors?.availability?.message}
+								onChange={handleChangePrice}
+								label="Product Price"
+								placeholder="899"
+								error={errors?.price ? true : false}
+								helperText={errors?.price?.message}
 							/>
+							<TextField
+								{...register('salePrice')}
+								style={{ marginBottom: '.8rem' }}
+								name="salePrice"
+								type="number"
+								value={salePrice}
+								autoComplete="off"
+								label="Product Sale Price"
+								placeholder="800"
+							/>
+						</div>
+
+						<div
+							style={{
+								display: 'flex',
+								justifyContent: 'space-around',
+								flexWrap: 'wrap',
+								marginBottom: '1rem',
+							}}
+						>
+							<TextField
+								{...register('weight_unit', {
+									required: 'Product weight unit is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product Weight Unit"
+								value={selectedWeightUnit}
+								onChange={handleChangeWeightUnit}
+								helperText="select product weight unit"
+							>
+								{weightUnit.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+
+							<TextField
+								{...register('weight_quantity', {
+									required: 'Product weight quantity is required!',
+									shouldFocus: true,
+								})}
+								style={{ marginBottom: '.8rem' }}
+								name="weight_quantity"
+								type="number"
+								autoComplete="off"
+								onChange={handleChangeWeight}
+								label="Weight Quantity"
+								error={errors?.weight_quantity ? true : false}
+								helperText={errors?.weight_quantity?.message}
+							/>
+
+							<TextField
+								{...register('weight', {
+									required: 'Product length is required!',
+									shouldFocus: true,
+								})}
+								style={{ marginBottom: '.8rem' }}
+								name="weight"
+								autoComplete="off"
+								value={weight}
+								label="Product Weight"
+							/>
+						</div>
+
+						<div
+							style={{
+								display: 'flex',
+								justifyContent: 'space-around',
+								flexWrap: 'wrap',
+								marginBottom: '1rem',
+							}}
+						>
+							<TextField
+								{...register('size_unit', {
+									required: 'Product size unit is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product Size Unit"
+								value={selectedSizeUnit}
+								onChange={handleChangeSizeUnit}
+								helperText="select product size unit"
+							>
+								{sizeUnit.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+						</div>
+
+						<div
+							style={{
+								display: 'flex',
+								justifyContent: 'space-around',
+								flexWrap: 'wrap',
+								marginBottom: '1rem',
+							}}
+						>
+							<TextField
+								{...register('length', {
+									required: 'Product length is required!',
+									shouldFocus: true,
+								})}
+								style={{ marginBottom: '.8rem' }}
+								name="length"
+								type="number"
+								autoComplete="off"
+								onChange={handleChangeLength}
+								label="Product Length"
+								error={errors?.length ? true : false}
+								helperText={errors?.length?.message}
+							/>
+
+							<TextField
+								{...register('width', {
+									required: 'Product width is required!',
+									shouldFocus: true,
+								})}
+								style={{ marginBottom: '.8rem' }}
+								name="width"
+								type="number"
+								autoComplete="off"
+								onChange={handleChangeWidth}
+								label="Product Width"
+								error={errors?.width ? true : false}
+								helperText={errors?.width?.message}
+							/>
+
+							<TextField
+								{...register('height', {
+									required: 'Product width is required!',
+									shouldFocus: true,
+								})}
+								style={{ marginBottom: '.8rem' }}
+								name="height"
+								type="number"
+								autoComplete="off"
+								onChange={handleChangeHeight}
+								label="Product Height"
+								error={errors?.height ? true : false}
+								helperText={errors?.height?.message}
+							/>
+
+							<TextField
+								{...register('size', {
+									required: 'Product size is required!',
+									shouldFocus: true,
+								})}
+								style={{ marginBottom: '.8rem' }}
+								name="size"
+								autoComplete="off"
+								value={size}
+								label="Product size"
+								placeholder="70cm * 30cm * 40cm"
+							/>
+						</div>
+
+						<div
+							style={{
+								display: 'flex',
+								justifyContent: 'space-around',
+								flexWrap: 'wrap',
+								marginBottom: '1rem',
+							}}
+						>
+							<TextField
+								{...register('gender', {
+									required: 'Product gender is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product Gender"
+								value={selectedGender}
+								onChange={handleChangeGender}
+								helperText="select product gender"
+							>
+								{gender.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+
+							<TextField
+								{...register('ageGroup', {
+									required: 'Product ageGroup is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product Age Group"
+								value={selectedAgeGroup}
+								onChange={handleChangeAgeGroup}
+								helperText="select product ageGroup"
+							>
+								{ageGroup.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+
+							<TextField
+								{...register('condition', {
+									required: 'Product condition is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product condition"
+								value={selectedCondition}
+								onChange={handleChangeCondition}
+								helperText="select product condition"
+							>
+								{condition.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+
+							<TextField
+								{...register('availability', {
+									required: 'Product availability is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product Availability"
+								value={selectedAvailability}
+								onChange={handleChangeStock}
+								helperText="select product availability"
+							>
+								{productAvailability.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
 						</div>
 						<LocalizationProvider dateAdapter={AdapterDateFns}>
 							<div
@@ -746,7 +991,7 @@ const MyProducts = () => {
 								<MobileDatePicker
 									label="Availability Date"
 									inputFormat="MM/dd/yyyy"
-									value={availabilityValue}
+									value={availabilityDate}
 									onChange={handleAvailabilityChange}
 									renderInput={(params) => (
 										<TextField sx={{ marginBottom: '.8rem' }} {...params} />
@@ -834,6 +1079,88 @@ const MyProducts = () => {
 };
 
 export default MyProducts;
+
+const gender = [
+	{
+		value: 'Male',
+		label: 'Male',
+	},
+	{
+		value: 'Female',
+		label: 'Female',
+	},
+	{
+		value: 'Unisex',
+		label: 'Unisex',
+	},
+];
+
+const sizeUnit = [
+	{
+		value: 'mm',
+		label: 'millimeters',
+	},
+	{
+		value: 'cm',
+		label: 'centimeters',
+	},
+	{
+		value: 'm',
+		label: 'meters',
+	},
+];
+
+const weightUnit = [
+	{
+		value: 'g',
+		label: 'grams',
+	},
+	{
+		value: 'kg',
+		label: 'kilograms',
+	},
+];
+
+const ageGroup = [
+	{
+		value: 'Child',
+		label: 'Child',
+	},
+	{
+		value: 'Adult',
+		label: 'Adult',
+	},
+];
+
+const condition = [
+	{
+		value: 'Brand New',
+		label: 'Brand New',
+	},
+	{
+		value: 'Used',
+		label: 'Used',
+	},
+	{
+		value: 'Refurbished',
+		label: 'Refurbished',
+	},
+	{
+		value: 'Custom Made',
+		label: 'Custom Made',
+	},
+];
+
+const productAvailability = [
+	{
+		value: 'In Stock',
+		label: 'In Stock',
+	},
+	{
+		value: 'Out of Stock',
+		label: 'Out of Stock',
+	},
+];
 
 const COLUMNS = [
 	{

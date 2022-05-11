@@ -212,12 +212,14 @@ export const postProduct = (payload) => async (dispatch) => {
 	const token = tokenConfig();
 	const {
 		name,
+		model,
 		brand,
 		color,
 		gender,
 		ageGroup,
 		files, // Please provide it as file
 		size,
+		weight,
 		price,
 		salePrice,
 		quantity,
@@ -239,12 +241,14 @@ export const postProduct = (payload) => async (dispatch) => {
 		let formData = new FormData();
 
 		formData.append('name', name);
+		formData.append('model', model);
 		formData.append('brand', brand);
 		formData.append('color', color);
 		formData.append('gender', gender);
 		formData.append('ageGroup', ageGroup);
 		// formData.append('file', files);
 		formData.append('size', size);
+		formData.append('weight', weight);
 		formData.append('price', price);
 		formData.append('salePrice', salePrice);
 		formData.append('quantity', quantity);

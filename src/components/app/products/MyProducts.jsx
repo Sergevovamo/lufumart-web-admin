@@ -323,7 +323,7 @@ const MyProducts = () => {
 
 	const onSubmit = async (data, e) => {
 		e.preventDefault();
-		// setButtonLoading(true);
+		setButtonLoading(true);
 
 		const {
 			name,

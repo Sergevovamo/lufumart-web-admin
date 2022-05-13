@@ -291,7 +291,7 @@ export const postProduct = (payload) => async (dispatch) => {
 
 		dispatch(clearErrors());
 	} catch (error) {
-		// console.log(error?.response?.data);
+		// console.log(error?.response);
 		toast.error('Error! Adding product was unsuccessful');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'POST_PRODUCT')

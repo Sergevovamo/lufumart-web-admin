@@ -129,7 +129,9 @@ const MyProducts = () => {
 	} = useDropzone({
 		onDrop,
 		accept: {
-			'image/jpeg': ['.jpeg', '.png', '.webp'],
+			'image/jpeg': ['.jpeg', '.jpg'],
+			'image/png': ['.png'],
+			'image/webp': ['.webp'],
 		},
 		maxFiles: 5,
 	});

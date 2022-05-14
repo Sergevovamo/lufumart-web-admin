@@ -94,7 +94,7 @@ export const postProductCategory = (payload) => async (dispatch) => {
 
 		dispatch(clearErrors());
 	} catch (error) {
-		// console.log(error.response.data);
+		console.log(error?.response);
 		toast.error('Error! Something went wrong.');
 		dispatch(
 			returnErrors(

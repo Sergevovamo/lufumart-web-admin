@@ -17,6 +17,8 @@ import {
 	TableContainer,
 	TableHead,
 	TableRow,
+	Popover,
+	Tooltip,
 	Paper,
 	CircularProgress,
 	Dialog,
@@ -25,11 +27,14 @@ import {
 	DialogContentText,
 	DialogTitle,
 	TextField,
+	Typography,
 	Button,
 	IconButton,
 } from '@mui/material';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { useForm } from 'react-hook-form';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MoreVert from '@mui/icons-material/MoreVert';
 import useTable from '../../../utils/useTable';
 import {
 	postProductCategory,
@@ -248,17 +253,93 @@ const ProductCategory = () => {
 											<TableCell>{name}</TableCell>
 											<TableCell align="left">{description}</TableCell>
 											<TableCell align="left">{admin?.name}</TableCell>
-											<TableCell align="left">
-												{format(
-													new Date(createdAt),
-													"do MMM yyyy, h:mm:ss aaaaa'm'"
-												)}
-											</TableCell>
+
 											<TableCell align="left">
 												{format(
 													new Date(updatedAt),
 													"do MMM yyyy, h:mm:ss aaaaa'm'"
 												)}
+											</TableCell>
+											<TableCell>
+												<PopupState
+													variant="popover"
+													popupId="demo-popup-popover"
+												>
+													{(popupState) => (
+														<>
+															<IconButton {...bindTrigger(popupState)}>
+																<Tooltip
+																	title="More actions"
+																	placement="right"
+																	arrow
+																>
+																	<MoreVert />
+																</Tooltip>
+															</IconButton>
+															<Popover
+																{...bindPopover(popupState)}
+																anchorOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																transformOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																elevation={1}
+															>
+																<Typography
+																	sx={{
+																		display: 'flex',
+																		flexDirection: 'column',
+																		padding: 2,
+																	}}
+																>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																		}}
+																		sx={{ padding: 2 }}
+																	>
+																		View
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Update
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Suspend
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Unsuspend
+																	</Link>
+																</Typography>
+															</Popover>
+														</>
+													)}
+												</PopupState>
 											</TableCell>
 										</TableRow>
 									</Fragment>
@@ -343,25 +424,6 @@ const ProductCategory = () => {
 							error={errors?.description ? true : false}
 							helperText={errors?.description?.message}
 						/>
-						{/* {auth?.user?.current_user?.isAdmin && (
-							<TextField
-								{...register('role', {
-									required: 'Role is required!',
-								})}
-								fullWidth
-								select
-								label="User role level"
-								value={selectedRole}
-								onChange={handleChange}
-								helperText="Please select user role level"
-							>
-								{roles.map((option) => (
-									<MenuItem key={option.value} value={option.value}>
-										{option.label}
-									</MenuItem>
-								))}
-							</TextField>
-						)} */}
 					</DialogContent>
 					<DialogActions sx={{ marginRight: '1rem', marginBottom: '1rem' }}>
 						<Button onClick={handleCloseDialog}>Cancel</Button>
@@ -419,12 +481,12 @@ const COLUMNS = [
 		label: 'Admin',
 	},
 	{
-		id: 'createdAt',
-		label: 'Date Created',
-	},
-	{
 		id: 'updatedAt',
 		label: 'Last Update',
+	},
+	{
+		id: 'action',
+		label: 'Action',
 	},
 ];
 

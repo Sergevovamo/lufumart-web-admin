@@ -19,6 +19,8 @@ import {
 	TableHead,
 	TableRow,
 	Paper,
+	Popover,
+	Tooltip,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -33,8 +35,10 @@ import {
 	Autocomplete,
 	CircularProgress,
 } from '@mui/material';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { useForm } from 'react-hook-form';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import MoreVert from '@mui/icons-material/MoreVert';
 import useTable from '../../../utils/useTable';
 import { tokenConfig } from '../../../store/actions/auth-actions';
 import {
@@ -223,15 +227,90 @@ const ProductSubCategory = () => {
 											<TableCell align="left">{admin?.name}</TableCell>
 											<TableCell align="left">
 												{format(
-													new Date(createdAt),
-													"do MMM yyyy, h:mm:ss aaaaa'm'"
-												)}
-											</TableCell>
-											<TableCell align="left">
-												{format(
 													new Date(updatedAt),
 													"do MMM yyyy, h:mm:ss aaaaa'm'"
 												)}
+											</TableCell>
+											<TableCell>
+												<PopupState
+													variant="popover"
+													popupId="demo-popup-popover"
+												>
+													{(popupState) => (
+														<>
+															<IconButton {...bindTrigger(popupState)}>
+																<Tooltip
+																	title="More actions"
+																	placement="right"
+																	arrow
+																>
+																	<MoreVert />
+																</Tooltip>
+															</IconButton>
+															<Popover
+																{...bindPopover(popupState)}
+																anchorOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																transformOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																elevation={1}
+															>
+																<Typography
+																	sx={{
+																		display: 'flex',
+																		flexDirection: 'column',
+																		padding: 2,
+																	}}
+																>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																		}}
+																		sx={{ padding: 2 }}
+																	>
+																		View
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Update
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Suspend
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Unsuspend
+																	</Link>
+																</Typography>
+															</Popover>
+														</>
+													)}
+												</PopupState>
 											</TableCell>
 										</TableRow>
 									</Fragment>
@@ -381,11 +460,11 @@ const COLUMNS = [
 		label: 'Admin',
 	},
 	{
-		id: 'createdAt',
-		label: 'Date Created',
-	},
-	{
 		id: 'updatedAt',
 		label: 'Last Update',
+	},
+	{
+		id: 'action',
+		label: 'Action',
 	},
 ];

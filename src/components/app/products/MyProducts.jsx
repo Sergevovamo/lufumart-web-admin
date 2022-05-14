@@ -19,6 +19,8 @@ import {
 	TableContainer,
 	TableHead,
 	TableRow,
+	Popover,
+	Tooltip,
 	Paper,
 	Dialog,
 	DialogActions,
@@ -35,9 +37,11 @@ import {
 	CircularProgress,
 } from '@mui/material';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { useForm } from 'react-hook-form';
+import MoreVert from '@mui/icons-material/MoreVert';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import useTable from '../../../utils/useTable';
@@ -47,6 +51,7 @@ import {
 	getProducts,
 } from '../../../store/actions/product-actions';
 import AdornedButton from '../../../utils/AdornedButton';
+import { numberWithCommas } from '../../../utils/NumberWithCommas';
 import styles from '../../../css/MyProducts.module.css';
 
 const MyProducts = () => {
@@ -473,6 +478,7 @@ const MyProducts = () => {
 									category,
 									imageUrl,
 									price,
+									salePrice,
 									updatedAt,
 								} = product;
 
@@ -489,13 +495,93 @@ const MyProducts = () => {
 											<TableCell>{name}</TableCell>
 											<TableCell align="left">{description}</TableCell>
 											<TableCell align="left">{category?.name}</TableCell>
-											<TableCell align="left">{owner?.name}</TableCell>
-											<TableCell align="left">{price}</TableCell>
 											<TableCell align="left">
-												{format(
-													new Date(updatedAt),
-													"do MMM yyyy, h:mm:ss aaaaa'm'"
-												)}
+												{numberWithCommas(price)}
+											</TableCell>
+											<TableCell align="left">
+												{numberWithCommas(salePrice)}
+											</TableCell>
+											<TableCell align="left">{owner?.name}</TableCell>
+											<TableCell>
+												<PopupState
+													variant="popover"
+													popupId="demo-popup-popover"
+												>
+													{(popupState) => (
+														<>
+															<IconButton {...bindTrigger(popupState)}>
+																<Tooltip
+																	title="More actions"
+																	placement="right"
+																	arrow
+																>
+																	<MoreVert />
+																</Tooltip>
+															</IconButton>
+															<Popover
+																{...bindPopover(popupState)}
+																anchorOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																transformOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																elevation={1}
+															>
+																<Typography
+																	sx={{
+																		display: 'flex',
+																		flexDirection: 'column',
+																		padding: 2,
+																	}}
+																>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																		}}
+																		sx={{ padding: 2 }}
+																	>
+																		View
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Update
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Suspend
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Unsuspend
+																	</Link>
+																</Typography>
+															</Popover>
+														</>
+													)}
+												</PopupState>
 											</TableCell>
 										</TableRow>
 									</Fragment>
@@ -1185,16 +1271,21 @@ const COLUMNS = [
 		label: 'Category',
 	},
 	{
-		id: 'owner',
-		label: 'Owner',
-	},
-	{
 		id: 'price',
 		label: 'Price',
 	},
 	{
-		id: 'updatedAt',
-		label: 'Last Update',
+		id: 'salePrice',
+		label: 'Sale Price',
+	},
+	{
+		id: 'owner',
+		label: 'Owner',
+	},
+
+	{
+		id: 'action',
+		label: 'Action',
 	},
 ];
 

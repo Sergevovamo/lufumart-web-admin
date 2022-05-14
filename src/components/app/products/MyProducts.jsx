@@ -128,11 +128,12 @@ const MyProducts = () => {
 		isDragReject,
 	} = useDropzone({
 		onDrop,
-		accept: {
-			'image/jpeg': ['.jpeg', '.jpg'],
-			'image/png': ['.png'],
-			'image/webp': ['.webp'],
-		},
+		accept: 'image/jpeg, image/png',
+		// accept: {
+		// 	'image/jpeg': ['.jpeg', '.jpg'],
+		// 	'image/png': ['.png'],
+		// 	'image/webp': ['.webp'],
+		// },
 		maxFiles: 5,
 	});
 

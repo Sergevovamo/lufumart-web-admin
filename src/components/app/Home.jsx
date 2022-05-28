@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button } from '@mui/material';
 import CountUp from 'react-countup';
 import PieChartM from './PieChartM';
 import SalesChart from './SalesChart';
 import AreaChart from './AreaChart';
+import { getTotalProducts } from '../../store/actions/product-actions';
 // import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import styles from '../../css/Home.module.css';
 
 const Home = () => {
+	const dispatch = useDispatch();
+	const totalProduct = useSelector((state) => state.products?.totalProducts);
+
+	useEffect(() => {
+		dispatch(getTotalProducts());
+	}, []);
+
 	return (
 		<div className={styles.home_container}>
 			<div className={styles.home_header}>
@@ -53,7 +62,12 @@ const Home = () => {
 					<div>
 						<h4>Total Products</h4>
 						<p>
-							<CountUp start={0} end={5678} duration={2.75} separator="," />
+							<CountUp
+								start={0}
+								end={totalProduct}
+								duration={2.75}
+								separator=","
+							/>
 						</p>
 					</div>
 				</div>
@@ -103,14 +117,14 @@ const Home = () => {
 						</div>
 					</div>
 					<div className={styles.card_detail}>
-						<h4 className={styles.card_title}>Total Product Brand</h4>
+						<h4 className={styles.card_title}>Total Products</h4>
 						<div className="card-inner">
 							<Link
 								style={{ textDecoration: 'none', textAlign: 'center' }}
 								to="/"
 							>
 								<Button style={{ fontSize: 40 }}>
-									<CountUp start={0} end={100} duration={2} />
+									<CountUp start={0} end={totalProduct} duration={2} />
 								</Button>
 							</Link>
 						</div>

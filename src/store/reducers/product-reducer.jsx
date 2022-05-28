@@ -9,6 +9,7 @@ import {
 	POST_PRODUCT,
 	GET_PRODUCT,
 	GET_PRODUCTS,
+	PRODUCT_METRIC,
 } from '../../constants/types';
 
 const initialState = {
@@ -20,6 +21,7 @@ const initialState = {
 	productSubCategories: null,
 	product: null,
 	products: null,
+	totalProducts: null,
 };
 
 export default function IdeaReducer(state = initialState, action) {
@@ -84,6 +86,13 @@ export default function IdeaReducer(state = initialState, action) {
 				isAuthenticated: true,
 				isLoading: false,
 				product: action.payload,
+			};
+		case PRODUCT_METRIC:
+			return {
+				...state,
+				isAuthenticated: true,
+				isLoading: false,
+				totalProducts: action.payload,
 			};
 		case DELETE_PRODUCT_CATEGORY:
 			return {

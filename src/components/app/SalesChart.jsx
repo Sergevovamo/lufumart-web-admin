@@ -6,7 +6,7 @@ import {
 	XAxis,
 	YAxis,
 	Tooltip,
-	// Legend,
+	Legend,
 	Bar,
 } from 'recharts';
 import { getMonthNameByOrder } from './MonthOrder';
@@ -34,14 +34,14 @@ const Trans = () => {
 					tickFormatter={getMonthNameByOrder}
 					tickLine={false}
 				/>
-				<YAxis unit="ml" width={35} axisLine={false} tickLine={false} />
+				<YAxis unit="" width={60} axisLine={false} tickLine={false} />
 				<Tooltip
 					labelFormatter={getMonthNameByOrder}
 					cursor={false}
 					contentStyle={TooltipContainerStyles}
 				/>
-				{/* <Legend /> */}
-				<Bar dataKey="rainfall" fill="#3066BE" unit="ml" name="Rainfall" />
+				<Legend />
+				<Bar dataKey="rainfall" fill="#3066BE" unit="products" name="Product" />
 			</BarChart>
 		</ResponsiveContainer>
 	);

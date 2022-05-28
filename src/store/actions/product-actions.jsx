@@ -11,6 +11,7 @@ import {
 	POST_PRODUCT,
 	GET_PRODUCT,
 	GET_PRODUCTS,
+	PRODUCT_METRIC,
 } from '../../constants/types';
 import { returnErrors, clearErrors } from './error-actions';
 
@@ -196,7 +197,7 @@ export const getProductSubCategories = () => async (dispatch) => {
 		});
 		dispatch(clearErrors());
 	} catch (error) {
-		console.log(error.response.data);
+		// console.log(error.response.data);
 		toast.error('Error. Something went wrong!');
 		dispatch(
 			returnErrors(
@@ -295,6 +296,32 @@ export const postProduct = (payload) => async (dispatch) => {
 		toast.error('Error! Adding product was unsuccessful');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'POST_PRODUCT')
+		);
+	}
+};
+
+export const getTotalProducts = () => async (dispatch) => {
+	try {
+		dispatch({ type: PRODUCT_LOADING });
+		const response = await axios.get(`${PRODUCTS_SERVER}/total-products`);
+		const data = await response.data;
+		const { totalProducts } = await data;
+
+		// console.log(data);
+		await dispatch({
+			type: PRODUCT_METRIC,
+			payload: totalProducts,
+		});
+		dispatch(clearErrors());
+	} catch (error) {
+		console.log(error.response.data);
+		toast.error('Error. Something went wrong!');
+		dispatch(
+			returnErrors(
+				error.response.data,
+				error.response.status,
+				'GET_TOTAL_PRODUCTS'
+			)
 		);
 	}
 };

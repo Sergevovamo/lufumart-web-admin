@@ -216,11 +216,13 @@ export const postProduct = (payload) => async (dispatch) => {
 		model,
 		brand,
 		color,
+		locality,
 		gender,
 		ageGroup,
 		files, // Please provide it as file
 		size,
 		weight,
+		currency,
 		price,
 		salePrice,
 		quantity,
@@ -245,11 +247,13 @@ export const postProduct = (payload) => async (dispatch) => {
 		formData.append('model', model);
 		formData.append('brand', brand);
 		formData.append('color', color);
+		formData.append('locality', locality);
 		formData.append('gender', gender);
 		formData.append('ageGroup', ageGroup);
 		// formData.append('file', files);
 		formData.append('size', size);
 		formData.append('weight', weight);
+		formData.append('currency', currency);
 		formData.append('price', price);
 		formData.append('salePrice', salePrice);
 		formData.append('quantity', quantity);

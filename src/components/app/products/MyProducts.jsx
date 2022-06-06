@@ -90,6 +90,8 @@ const MyProducts = () => {
 
 	const [selectedGender, setSelectedGender] = useState('Unisex');
 	const [selectedSizeUnit, setSelectedSizeUnit] = useState('cm');
+	const [selectedLocality, setSelectedLocality] = useState('International');
+	const [selectedCurrency, setSelectedCurrency] = useState('KES');
 	const [selectedWeightUnit, setSelectedWeightUnit] = useState('g');
 	const [selectedAgeGroup, setSelectedAgeGroup] = useState('Child');
 	const [selectedCondition, setSelectedCondition] = useState('Brand New');
@@ -303,6 +305,14 @@ const MyProducts = () => {
 		setSelectedGender(event.target.value);
 	};
 
+	const handleChangeLocality = (event) => {
+		setSelectedLocality(event.target.value);
+	};
+
+	const handleChangeCurrency = (event) => {
+		setSelectedCurrency(event.target.value);
+	};
+
 	const handleChangeSizeUnit = (event) => {
 		setSelectedSizeUnit(event.target.value);
 	};
@@ -333,17 +343,19 @@ const MyProducts = () => {
 
 	const onSubmit = async (data, e) => {
 		e.preventDefault();
-		setButtonLoading(true);
+		// setButtonLoading(true);
 
 		const {
 			name,
 			model,
 			brand,
 			color,
+			locality,
 			gender,
 			ageGroup,
 			// size, use the one from state
 			price,
+			currency,
 			// salePrice, use the one from state
 			quantity,
 			description,
@@ -380,10 +392,12 @@ const MyProducts = () => {
 			brand,
 			model,
 			color,
+			locality,
 			gender,
 			ageGroup,
 			size,
 			weight,
+			currency,
 			price: parseInt(price),
 			salePrice: parseInt(salePrice),
 			quantity: parseInt(quantity),
@@ -501,7 +515,7 @@ const MyProducts = () => {
 											<TableCell align="left">
 												{numberWithCommas(salePrice)}
 											</TableCell>
-											<TableCell align="left">{owner?.name}</TableCell>
+											{/* <TableCell align="left">{owner?.name}</TableCell> */}
 											<TableCell>
 												<PopupState
 													variant="popover"
@@ -905,6 +919,42 @@ const MyProducts = () => {
 							}}
 						>
 							<TextField
+								{...register('locality', {
+									required: 'Product locality is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product Locality"
+								value={selectedLocality}
+								onChange={handleChangeLocality}
+								helperText="select product locality"
+							>
+								{locality.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+
+							<TextField
+								{...register('currency', {
+									required: 'Product currency is required!',
+								})}
+								style={{ marginBottom: '.8rem' }}
+								select
+								label="Product Currency"
+								value={selectedCurrency}
+								onChange={handleChangeCurrency}
+								helperText="select product currency"
+							>
+								{currency.map((option) => (
+									<MenuItem key={option.value} value={option.value}>
+										{option.label}
+									</MenuItem>
+								))}
+							</TextField>
+
+							<TextField
 								{...register('size_unit', {
 									required: 'Product size unit is required!',
 								})}
@@ -1186,6 +1236,36 @@ const gender = [
 	},
 ];
 
+const locality = [
+	{
+		value: 'Local',
+		label: 'Local',
+	},
+	{
+		value: 'International',
+		label: 'International',
+	},
+];
+
+const currency = [
+	{
+		value: 'KES',
+		label: 'Kenyan Shilling',
+	},
+	{
+		value: 'USh',
+		label: 'Ugandan Shilling',
+	},
+	{
+		value: 'FC',
+		label: 'Congolese Fanc',
+	},
+	{
+		value: 'USD',
+		label: 'United States Dollar',
+	},
+];
+
 const sizeUnit = [
 	{
 		value: 'mm',
@@ -1278,11 +1358,10 @@ const COLUMNS = [
 		id: 'salePrice',
 		label: 'Sale Price',
 	},
-	{
-		id: 'owner',
-		label: 'Owner',
-	},
-
+	// {
+	// 	id: 'owner',
+	// 	label: 'Owner',
+	// },
 	{
 		id: 'action',
 		label: 'Action',

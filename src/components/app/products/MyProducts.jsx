@@ -343,7 +343,7 @@ const MyProducts = () => {
 
 	const onSubmit = async (data, e) => {
 		e.preventDefault();
-		// setButtonLoading(true);
+		setButtonLoading(true);
 
 		const {
 			name,
@@ -489,6 +489,7 @@ const MyProducts = () => {
 									name,
 									description,
 									owner,
+									currency,
 									category,
 									imageUrl,
 									price,
@@ -510,10 +511,10 @@ const MyProducts = () => {
 											<TableCell align="left">{description}</TableCell>
 											<TableCell align="left">{category?.name}</TableCell>
 											<TableCell align="left">
-												{numberWithCommas(price)}
+												{currency} {numberWithCommas(price)}
 											</TableCell>
 											<TableCell align="left">
-												{numberWithCommas(salePrice)}
+												USD {numberWithCommas(salePrice)}
 											</TableCell>
 											{/* <TableCell align="left">{owner?.name}</TableCell> */}
 											<TableCell>

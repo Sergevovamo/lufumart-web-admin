@@ -34,7 +34,7 @@ const Home = () => {
 						<p>
 							<CountUp
 								start={0}
-								end={19628255}
+								end={0}
 								duration={2.75}
 								decimals={2}
 								decimal="."
@@ -51,7 +51,7 @@ const Home = () => {
 					<div>
 						<h4>Total Orders</h4>
 						<p>
-							<CountUp start={0} end={87790} duration={2.75} separator="," />
+							<CountUp start={0} end={0} duration={2.75} separator="," />
 						</p>
 					</div>
 				</div>
@@ -85,7 +85,7 @@ const Home = () => {
 								to="/"
 							>
 								<Button style={{ fontSize: 40 }}>
-									<CountUp start={0} end={12} duration={2} />
+									<CountUp start={0} end={0} duration={2} />
 								</Button>
 							</Link>
 						</div>
@@ -98,7 +98,7 @@ const Home = () => {
 								to="/"
 							>
 								<Button style={{ fontSize: 40 }}>
-									<CountUp start={0} end={36} duration={2} />
+									<CountUp start={0} end={0} duration={2} />
 								</Button>
 							</Link>
 						</div>
@@ -111,7 +111,7 @@ const Home = () => {
 								to="/"
 							>
 								<Button style={{ fontSize: 40 }}>
-									<CountUp start={0} end={349} duration={2} />
+									<CountUp start={0} end={0} duration={2} />
 								</Button>
 							</Link>
 						</div>

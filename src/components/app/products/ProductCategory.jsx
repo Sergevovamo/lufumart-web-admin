@@ -10,12 +10,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import {
-	Table,
-	MenuItem,
 	TableBody,
 	TableCell,
 	TableContainer,
-	TableHead,
 	TableRow,
 	Popover,
 	Tooltip,
@@ -38,6 +35,7 @@ import MoreVert from '@mui/icons-material/MoreVert';
 import useTable from '../../../utils/useTable';
 import {
 	postProductCategory,
+	updateProductCategory,
 	getProductCategories,
 } from '../../../store/actions/product-actions';
 import AdornedButton from '../../../utils/AdornedButton';
@@ -52,6 +50,8 @@ const ProductCategory = () => {
 
 	const [files, setFiles] = useState([]);
 	const [openPopup, setOpenPopup] = useState(false);
+	const [openEditPopup, setOpenEditPopup] = useState(false);
+	const [updatedCategory, setUpdatedCategory] = useState([]);
 	const [buttonLoading, setButtonLoading] = useState(false);
 	const [selectedRole, setSelectedRole] = useState('Administrator');
 
@@ -63,7 +63,7 @@ const ProductCategory = () => {
 
 	const {
 		register,
-		getValues,
+		reset,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
@@ -108,6 +108,15 @@ const ProductCategory = () => {
 		dispatch(getProductCategories());
 	}, []);
 
+	useEffect(() => {
+		reset({
+			name: '',
+			email: '',
+			phone: '',
+		});
+		// eslint-disable-next-line
+	}, [openPopup]);
+
 	const columns = useMemo(() => COLUMNS, []);
 	const data = useMemo(
 		() => productCategories?.productCategories,
@@ -146,8 +155,29 @@ const ProductCategory = () => {
 		setOpenPopup(true);
 	};
 
+	const handleEditPopup = (data, e) => {
+		e.preventDefault();
+		const { name, description } = data;
+
+		reset({
+			name,
+			description,
+		});
+
+		setUpdatedCategory(data);
+		setOpenEditPopup(true);
+	};
+
 	const handleCloseDialog = () => {
 		setOpenPopup(false);
+	};
+
+	const handleCloseEditDialog = () => {
+		reset({
+			name: '',
+			description: '',
+		});
+		setOpenEditPopup(false);
 	};
 
 	const onSubmit = async (data, e) => {
@@ -166,6 +196,25 @@ const ProductCategory = () => {
 
 		setButtonLoading(false);
 		handleCloseDialog();
+	};
+
+	const onSubmitEdit = async (data, e) => {
+		e.preventDefault();
+		setButtonLoading(true);
+		const { name, description } = data;
+
+		const newData = {
+			_id: updatedCategory._id,
+			name,
+			file: files[0],
+			description,
+		};
+
+		await dispatch(updateProductCategory(newData));
+		await dispatch(getProductCategories());
+
+		setButtonLoading(false);
+		handleCloseEditDialog();
 	};
 
 	const thumbs = files.map((file) => (
@@ -307,6 +356,9 @@ const ProductCategory = () => {
 																	</Link>
 																	<Link
 																		to="#"
+																		onClick={(e) =>
+																			handleEditPopup(category, e)
+																		}
 																		style={{
 																			textDecoration: 'none',
 																			color: '#000',
@@ -368,12 +420,20 @@ const ProductCategory = () => {
 				</CustomTable>
 				<CustomPagination />
 			</TableContainer>
-			<Dialog open={openPopup} onClose={handleCloseDialog}>
-				<DialogTitle>Add Product Category</DialogTitle>
-				<form onSubmit={handleSubmit(onSubmit)}>
+			<Dialog open={openEditPopup ? openEditPopup : openPopup}>
+				<DialogTitle>
+					{openEditPopup ? 'Edit Product Category' : 'Add Product Category'}{' '}
+				</DialogTitle>
+				<form
+					onSubmit={
+						openEditPopup ? handleSubmit(onSubmitEdit) : handleSubmit(onSubmit)
+					}
+				>
 					<DialogContent>
 						<DialogContentText style={{ marginBottom: '.8rem' }}>
-							Create product category to allow easy management of products.
+							{openEditPopup
+								? 'Edit product category to allow easy management of products.'
+								: 'Create product category to allow easy management of products.'}
 						</DialogContentText>
 
 						<TextField
@@ -426,14 +486,20 @@ const ProductCategory = () => {
 						/>
 					</DialogContent>
 					<DialogActions sx={{ marginRight: '1rem', marginBottom: '1rem' }}>
-						<Button onClick={handleCloseDialog}>Cancel</Button>
+						<Button
+							onClick={
+								openEditPopup ? handleCloseEditDialog : handleCloseDialog
+							}
+						>
+							Cancel
+						</Button>
 						<AdornedButton
 							type="submit"
 							disabled={buttonLoading ? true : false}
 							loading={buttonLoading}
 							variant="contained"
 						>
-							Create
+							{openEditPopup ? 'Update' : 'Create'}
 						</AdornedButton>
 					</DialogActions>
 				</form>

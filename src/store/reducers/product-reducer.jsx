@@ -1,6 +1,7 @@
 import {
 	PRODUCT_LOADING,
 	POST_PRODUCT_CATEGORY,
+	EDIT_PRODUCT_CATEGORY,
 	GET_PRODUCT_CATEGORY,
 	GET_PRODUCT_CATEGORIES,
 	GET_PRODUCT_SUB_CATEGORIES,
@@ -53,6 +54,13 @@ export default function IdeaReducer(state = initialState, action) {
 				productSubCategories: action.payload,
 			};
 		case POST_PRODUCT_CATEGORY:
+			return {
+				...state,
+				isAuthenticated: true,
+				isLoading: false,
+				productCategory: action.payload,
+			};
+		case EDIT_PRODUCT_CATEGORY:
 			return {
 				...state,
 				isAuthenticated: true,

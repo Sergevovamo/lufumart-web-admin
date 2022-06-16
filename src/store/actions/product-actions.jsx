@@ -4,6 +4,7 @@ import { batch } from 'react-redux';
 import {
 	PRODUCT_LOADING,
 	POST_PRODUCT_CATEGORY,
+	EDIT_PRODUCT_CATEGORY,
 	POST_PRODUCT_SUB_CATEGORY,
 	GET_PRODUCT_CATEGORY,
 	GET_PRODUCT_CATEGORIES,
@@ -102,6 +103,52 @@ export const postProductCategory = (payload) => async (dispatch) => {
 				error.response.data,
 				error.response.status,
 				'CREATE_PRODUCT_CATEGORY'
+			)
+		);
+	}
+};
+
+export const updateProductCategory = (payload) => async (dispatch) => {
+	const token = tokenConfig();
+	const { _id, name, file, description } = payload;
+	// console.log(payload);
+
+	try {
+		let formData = new FormData();
+
+		formData.append('name', name);
+		formData.append('file', file);
+		formData.append('description', description);
+
+		const response = await axios.put(
+			`${PRODUCTS_CATEGORY_SERVER}/${_id}`,
+			formData,
+			token
+		);
+		const data = await response.data;
+		// console.log(data);
+
+		if (data) {
+			batch(() => {
+				dispatch({ type: PRODUCT_LOADING });
+				dispatch({
+					type: EDIT_PRODUCT_CATEGORY,
+					payload: data,
+				});
+			});
+
+			toast.success(`Success! Update product category.`);
+		}
+
+		dispatch(clearErrors());
+	} catch (error) {
+		console.log(error?.response);
+		toast.error('Error! Product update unsuccessful');
+		dispatch(
+			returnErrors(
+				error.response.data,
+				error.response.status,
+				'EDIT_PRODUCT_CATEGORY'
 			)
 		);
 	}

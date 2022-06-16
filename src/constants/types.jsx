@@ -17,6 +17,7 @@ export const CREATE_USER = 'create_user';
 
 export const PRODUCT_LOADING = 'product_loading';
 export const POST_PRODUCT_CATEGORY = 'post_product_category';
+export const EDIT_PRODUCT_CATEGORY = 'edit_product_category';
 export const GET_PRODUCT_CATEGORY = 'get_product_category';
 export const GET_PRODUCT_CATEGORIES = 'get_product_categories';
 export const DELETE_PRODUCT_CATEGORY = 'delete_product_category';

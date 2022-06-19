@@ -23,6 +23,9 @@ const initialState = {
 	product: null,
 	products: null,
 	totalProducts: null,
+	totalOrders: null,
+	totalProductCategories: null,
+	totalProductSubCategories: null,
 };
 
 export default function IdeaReducer(state = initialState, action) {
@@ -100,7 +103,10 @@ export default function IdeaReducer(state = initialState, action) {
 				...state,
 				isAuthenticated: true,
 				isLoading: false,
-				totalProducts: action.payload,
+				totalProducts: action.payload.totalProducts,
+				totalProductCategories: action.payload.totalProductCategories,
+				totalProductSubCategories: action.payload.totalProductSubCategories,
+				totalOrders: action.payload.totalOrders,
 			};
 		case DELETE_PRODUCT_CATEGORY:
 			return {

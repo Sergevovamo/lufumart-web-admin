@@ -44,6 +44,7 @@ import { tokenConfig } from '../../../store/actions/auth-actions';
 import {
 	postProductSubCategory,
 	getProductSubCategories,
+	getTotalProducts,
 } from '../../../store/actions/product-actions';
 import AdornedButton from '../../../utils/AdornedButton';
 import styles from '../../../css/ProductSubCategory.module.css';
@@ -55,6 +56,9 @@ const ProductSubCategory = () => {
 
 	let productSubCategories = useSelector((state) => state.products);
 	let isLoading = useSelector((state) => state.products?.isLoading);
+	const totalProductSubCategories = useSelector(
+		(state) => state.products?.totalProductSubCategories
+	);
 
 	const [openPopup, setOpenPopup] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);
@@ -80,6 +84,10 @@ const ProductSubCategory = () => {
 		shouldUnregister: true,
 		shouldFocusError: true,
 	});
+
+	useEffect(() => {
+		dispatch(getTotalProducts());
+	}, []);
 
 	useEffect(() => {
 		dispatch(getProductSubCategories());
@@ -128,7 +136,7 @@ const ProductSubCategory = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(data, columns, filteredSearch);
+	} = useTable(totalProductSubCategories, data, columns, filteredSearch);
 
 	const handleSearch = (e) => {
 		let target = e.target;
@@ -194,10 +202,7 @@ const ProductSubCategory = () => {
 						marginRight: '1rem',
 					}}
 				>
-					<h3>
-						{productSubCategories?.productSubCategories?.length} Product Sub
-						Categories
-					</h3>
+					<h3>{totalProductSubCategories} Product Sub Categories</h3>
 					<Button variant="contained" onClick={handleClickOpen}>
 						Add Sub Category
 					</Button>
@@ -216,7 +221,6 @@ const ProductSubCategory = () => {
 									createdAt,
 									updatedAt,
 								} = item;
-								console.log(item);
 
 								return (
 									<Fragment key={_id}>

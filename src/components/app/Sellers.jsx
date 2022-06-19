@@ -61,7 +61,7 @@ const Sellers = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(sellers, columns, filteredSearch);
+	} = useTable(sellers?.length, sellers, columns, filteredSearch);
 
 	const {
 		register,

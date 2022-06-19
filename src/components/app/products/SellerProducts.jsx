@@ -31,6 +31,7 @@ import useTable from '../../../utils/useTable';
 import {
 	postProduct,
 	getProducts,
+	getTotalProducts,
 } from '../../../store/actions/product-actions';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import styles from '../../../css/SellerProducts.module.css';
@@ -41,6 +42,7 @@ const SellerProducts = () => {
 
 	let products = useSelector((state) => state.products);
 	let isLoading = useSelector((state) => state.products?.isLoading);
+	const totalProducts = useSelector((state) => state.products?.totalProducts);
 
 	const [filteredSearch, setFilteredSearch] = useState({
 		fn: (items) => {
@@ -52,6 +54,10 @@ const SellerProducts = () => {
 		dispatch(getProducts());
 	}, []);
 
+	useEffect(() => {
+		dispatch(getTotalProducts());
+	}, []);
+
 	const columns = useMemo(() => COLUMNS, []);
 	const data = useMemo(() => products?.products, [products?.products]);
 
@@ -60,7 +66,7 @@ const SellerProducts = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(data, columns, filteredSearch);
+	} = useTable(totalProducts, data, columns, filteredSearch);
 
 	return (
 		<div className={styles.product_container}>

@@ -68,7 +68,7 @@ const Staff = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(users, columns, filteredSearch);
+	} = useTable(users?.length, users, columns, filteredSearch);
 
 	const handleSearch = (e) => {
 		let target = e.target;

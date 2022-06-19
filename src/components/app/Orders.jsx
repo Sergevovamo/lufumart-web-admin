@@ -58,7 +58,7 @@ const Orders = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(data, columns, filteredSearch);
+	} = useTable(data?.length, data, columns, filteredSearch);
 
 	const handleSearch = (e) => {
 		let target = e.target;

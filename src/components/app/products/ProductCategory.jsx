@@ -17,6 +17,14 @@ import {
 	Popover,
 	Tooltip,
 	Paper,
+	Grid,
+	Card,
+	CardHeader,
+	CardContent,
+	CardMedia,
+	CardActions,
+	Collapse,
+	Avatar,
 	CircularProgress,
 	Dialog,
 	DialogActions,
@@ -28,18 +36,35 @@ import {
 	Button,
 	IconButton,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import { useForm } from 'react-hook-form';
+import { orange } from '@mui/material/colors';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MoreVert from '@mui/icons-material/MoreVert';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import GridViewOutlined from '@mui/icons-material/GridViewOutlined';
+import ViewDay from '@mui/icons-material/ViewDay';
 import useTable from '../../../utils/useTable';
 import {
 	postProductCategory,
 	updateProductCategory,
 	getProductCategories,
+	getTotalProducts,
 } from '../../../store/actions/product-actions';
 import AdornedButton from '../../../utils/AdornedButton';
 import styles from '../../../css/ProductCategory.module.css';
+
+const ExpandMore = styled((props) => {
+	const { expand, ...other } = props;
+	return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+	transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+	marginLeft: 'auto',
+	transition: theme.transitions.create('transform', {
+		duration: theme.transitions.duration.shortest,
+	}),
+}));
 
 const ProductCategory = () => {
 	const navigate = useNavigate();
@@ -47,6 +72,9 @@ const ProductCategory = () => {
 	let auth = useSelector((state) => state.auth);
 	let productCategories = useSelector((state) => state.products);
 	let loading = useSelector((state) => state.products?.isLoading);
+	const totalProductCategories = useSelector(
+		(state) => state.products?.totalProductCategories
+	);
 
 	const [files, setFiles] = useState([]);
 	const [openPopup, setOpenPopup] = useState(false);
@@ -54,6 +82,8 @@ const ProductCategory = () => {
 	const [updatedCategory, setUpdatedCategory] = useState([]);
 	const [buttonLoading, setButtonLoading] = useState(false);
 	const [selectedRole, setSelectedRole] = useState('Administrator');
+	const [expanded, setExpanded] = useState(false);
+	const [toggleView, setToggleView] = useState(false);
 
 	const [filteredSearch, setFilteredSearch] = useState({
 		fn: (items) => {
@@ -105,6 +135,10 @@ const ProductCategory = () => {
 	);
 
 	useEffect(() => {
+		dispatch(getTotalProducts());
+	}, []);
+
+	useEffect(() => {
 		dispatch(getProductCategories());
 	}, []);
 
@@ -128,7 +162,7 @@ const ProductCategory = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(data, columns, filteredSearch);
+	} = useTable(totalProductCategories, data, columns, filteredSearch);
 
 	const handleSearch = (e) => {
 		let target = e.target;
@@ -149,6 +183,14 @@ const ProductCategory = () => {
 
 	const handleChange = (event) => {
 		setSelectedRole(event.target.value);
+	};
+
+	const handleExpandClick = () => {
+		setExpanded(!expanded);
+	};
+
+	const handleToggleClick = () => {
+		setToggleView(!toggleView);
 	};
 
 	const handleClickOpen = () => {
@@ -250,176 +292,332 @@ const ProductCategory = () => {
 
 	return (
 		<div className={styles.product_container}>
-			<IconButton
+			<Grid
+				container
+				direction="row"
+				justifyContent="space-between"
+				alignItems="center"
 				style={{ marginTop: '1rem' }}
-				onClick={() => navigate('/products')}
 			>
-				<ArrowBackIcon />
-			</IconButton>
-			<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
-				<div
-					style={{
-						display: 'flex',
-						justifyContent: 'space-between',
-						alignItems: 'center',
-						marginTop: '1rem',
-						marginLeft: '1rem',
-						marginRight: '1rem',
-					}}
+				<IconButton onClick={() => navigate('/products')}>
+					<ArrowBackIcon />
+				</IconButton>
+				<Grid
+					item
+					style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
 				>
-					<h3>
-						{productCategories?.productCategories?.length} Product Categories
-					</h3>
-					<Button variant="contained" onClick={handleClickOpen}>
-						Add Category
-					</Button>
-				</div>
-				<CustomTable>
-					<CustomHead />
-					<TableBody>
-						{productCategories?.productCategories?.length > 0 ? (
-							recordsAfterPagingAndSorting()?.map((category) => {
-								const {
-									_id,
-									name,
-									description,
-									admin,
-									imageUrl,
-									createdAt,
-									updatedAt,
-								} = category;
-
-								return (
-									<Fragment key={_id}>
-										<TableRow>
-											<TableCell>
-												<img
-													style={{ width: '50px' }}
-													src={imageUrl}
-													alt={name}
-												/>
-											</TableCell>
-											<TableCell>{name}</TableCell>
-											<TableCell align="left">{description}</TableCell>
-											<TableCell align="left">{admin?.name}</TableCell>
-
-											<TableCell align="left">
-												{format(
-													new Date(updatedAt),
-													"do MMM yyyy, h:mm:ss aaaaa'm'"
-												)}
-											</TableCell>
-											<TableCell>
-												<PopupState
-													variant="popover"
-													popupId="demo-popup-popover"
+					<Typography>View</Typography>
+					<IconButton onClick={handleToggleClick}>
+						{toggleView ? <ViewDay /> : <GridViewOutlined />}
+					</IconButton>
+				</Grid>
+			</Grid>
+			{toggleView ? (
+				<Grid container spacing={2} style={{ marginTop: '.5rem' }}>
+					{productCategories?.productCategories?.length > 0 ? (
+						recordsAfterPagingAndSorting()?.map((category) => {
+							const { _id, name, description, admin, imageUrl, updatedAt } =
+								category;
+							return (
+								<Grid item xs={3} key={_id}>
+									<Card>
+										<CardHeader
+											avatar={
+												<Avatar
+													sx={{ bgcolor: orange[500] }}
+													aria-label="recipe"
 												>
-													{(popupState) => (
-														<>
-															<IconButton {...bindTrigger(popupState)}>
-																<Tooltip
-																	title="More actions"
-																	placement="right"
-																	arrow
-																>
-																	<MoreVert />
-																</Tooltip>
-															</IconButton>
-															<Popover
-																{...bindPopover(popupState)}
-																anchorOrigin={{
-																	vertical: 'top',
-																	horizontal: 'right',
-																}}
-																transformOrigin={{
-																	vertical: 'top',
-																	horizontal: 'right',
-																}}
-																elevation={1}
-															>
-																<Typography
-																	sx={{
-																		display: 'flex',
-																		flexDirection: 'column',
-																		padding: 2,
+													{admin?.name.charAt(0)}
+												</Avatar>
+											}
+											action={
+												<>
+													<PopupState
+														variant="popover"
+														popupId="demo-popup-popover"
+													>
+														{(popupState) => (
+															<>
+																<IconButton {...bindTrigger(popupState)}>
+																	<Tooltip
+																		title="More actions"
+																		placement="right"
+																		arrow
+																	>
+																		<MoreVert />
+																	</Tooltip>
+																</IconButton>
+																<Popover
+																	{...bindPopover(popupState)}
+																	anchorOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
 																	}}
+																	transformOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
+																	}}
+																	elevation={1}
 																>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																		}}
-																		sx={{ padding: 2 }}
-																	>
-																		View
-																	</Link>
-																	<Link
-																		to="#"
-																		onClick={(e) =>
-																			handleEditPopup(category, e)
-																		}
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
+																	<Typography
+																		sx={{
+																			display: 'flex',
+																			flexDirection: 'column',
+																			padding: 2,
 																		}}
 																	>
-																		Update
-																	</Link>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
-																		}}
-																	>
-																		Suspend
-																	</Link>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
-																		}}
-																	>
-																		Unsuspend
-																	</Link>
-																</Typography>
-															</Popover>
-														</>
-													)}
-												</PopupState>
-											</TableCell>
-										</TableRow>
-									</Fragment>
-								);
-							})
-						) : (
-							<TableRow>
-								<TableCell
-									colSpan={12}
-									style={{ padding: '1rem', textAlign: 'center' }}
-								>
-									{loading ? (
-										<CircularProgress
-											variant="indeterminate"
-											disableShrink
-											size={25}
-											thickness={4}
+																		<Link
+																			to="#"
+																			onClick={(e) =>
+																				handleEditPopup(category, e)
+																			}
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Update
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Suspend
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Unsuspend
+																		</Link>
+																	</Typography>
+																</Popover>
+															</>
+														)}
+													</PopupState>
+												</>
+											}
+											title={admin?.name}
+											subheader={format(new Date(updatedAt), 'do MMM yyyy')}
 										/>
-									) : (
-										<p>You have no product categories</p>
-									)}
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</CustomTable>
-				<CustomPagination />
-			</TableContainer>
+
+										<Paper elevation={0} sx={{ padding: '.5rem' }}>
+											<CardMedia
+												component="img"
+												image={imageUrl}
+												alt="Product Category Images"
+											/>
+										</Paper>
+
+										<CardContent>
+											<Typography>{name}</Typography>
+										</CardContent>
+										<CardActions disableSpacing>
+											<ExpandMore
+												expand={expanded}
+												onClick={handleExpandClick}
+												aria-expanded={expanded}
+												aria-label="show more"
+											>
+												<ExpandMoreIcon />
+											</ExpandMore>
+										</CardActions>
+										<Collapse in={expanded} timeout="auto" unmountOnExit>
+											<CardContent>
+												<Typography paragraph>Description:</Typography>
+												<Typography paragraph>{description}</Typography>
+											</CardContent>
+										</Collapse>
+									</Card>
+								</Grid>
+							);
+						})
+					) : (
+						<Grid
+							container
+							direction="row"
+							justifyContent="center"
+							alignItems="center"
+						>
+							<Grid item>
+								{loading ? (
+									<CircularProgress
+										variant="indeterminate"
+										disableShrink
+										size={25}
+										thickness={4}
+									/>
+								) : (
+									<p>You have no product categories</p>
+								)}
+							</Grid>
+						</Grid>
+					)}
+				</Grid>
+			) : (
+				<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+							marginTop: '1rem',
+							marginLeft: '1rem',
+							marginRight: '1rem',
+						}}
+					>
+						<h3>{totalProductCategories} Product Categories</h3>
+						<Button variant="contained" onClick={handleClickOpen}>
+							Add Category
+						</Button>
+					</div>
+					<CustomTable>
+						<CustomHead />
+						<TableBody>
+							{productCategories?.productCategories?.length > 0 ? (
+								recordsAfterPagingAndSorting()?.map((category) => {
+									const {
+										_id,
+										name,
+										description,
+										admin,
+										imageUrl,
+										createdAt,
+										updatedAt,
+									} = category;
+
+									return (
+										<Fragment key={_id}>
+											<TableRow>
+												<TableCell>
+													<img
+														style={{ width: '50px' }}
+														src={imageUrl}
+														alt={name}
+													/>
+												</TableCell>
+												<TableCell>{name}</TableCell>
+												<TableCell align="left">{description}</TableCell>
+												<TableCell align="left">{admin?.name}</TableCell>
+
+												<TableCell align="left">
+													{format(
+														new Date(updatedAt),
+														"do MMM yyyy, h:mm:ss aaaaa'm'"
+													)}
+												</TableCell>
+												<TableCell>
+													<PopupState
+														variant="popover"
+														popupId="demo-popup-popover"
+													>
+														{(popupState) => (
+															<>
+																<IconButton {...bindTrigger(popupState)}>
+																	<Tooltip
+																		title="More actions"
+																		placement="right"
+																		arrow
+																	>
+																		<MoreVert />
+																	</Tooltip>
+																</IconButton>
+																<Popover
+																	{...bindPopover(popupState)}
+																	anchorOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
+																	}}
+																	transformOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
+																	}}
+																	elevation={1}
+																>
+																	<Typography
+																		sx={{
+																			display: 'flex',
+																			flexDirection: 'column',
+																			padding: 2,
+																		}}
+																	>
+																		<Link
+																			to="#"
+																			onClick={(e) =>
+																				handleEditPopup(category, e)
+																			}
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Update
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Suspend
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Unsuspend
+																		</Link>
+																	</Typography>
+																</Popover>
+															</>
+														)}
+													</PopupState>
+												</TableCell>
+											</TableRow>
+										</Fragment>
+									);
+								})
+							) : (
+								<TableRow>
+									<TableCell
+										colSpan={12}
+										style={{ padding: '1rem', textAlign: 'center' }}
+									>
+										{loading ? (
+											<CircularProgress
+												variant="indeterminate"
+												disableShrink
+												size={25}
+												thickness={4}
+											/>
+										) : (
+											<p>You have no product categories</p>
+										)}
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</CustomTable>
+					<CustomPagination />
+				</TableContainer>
+			)}
+
 			<Dialog open={openEditPopup ? openEditPopup : openPopup}>
 				<DialogTitle>
 					{openEditPopup ? 'Edit Product Category' : 'Add Product Category'}{' '}
@@ -451,6 +649,13 @@ const ProductCategory = () => {
 							error={errors?.name ? true : false}
 							helperText={errors?.name?.message}
 						/>
+						<Card sx={{ marginBottom: '.8rem' }}>
+							<CardMedia
+								component="img"
+								image={updatedCategory?.imageUrl}
+								alt="Product Category Images"
+							/>
+						</Card>
 
 						<div {...getRootProps({ style })}>
 							<input {...getInputProps()} />

@@ -38,7 +38,7 @@ const Wallet = () => {
 	const columns = useMemo(() => COLUMNS, []);
 
 	const { CustomHead, CustomPagination, recordsAfterPagingAndSorting } =
-		useTable(data, columns, filteredSearch);
+		useTable(data?.length, data, columns, filteredSearch);
 
 	return (
 		<div className={styles.transactions_container}>

@@ -356,12 +356,11 @@ export const getTotalProducts = () => async (dispatch) => {
 		dispatch({ type: PRODUCT_LOADING });
 		const response = await axios.get(`${PRODUCTS_SERVER}/total-products`);
 		const data = await response.data;
-		const { totalProducts } = await data;
 
 		// console.log(data);
 		await dispatch({
 			type: PRODUCT_METRIC,
-			payload: totalProducts,
+			payload: data,
 		});
 		dispatch(clearErrors());
 	} catch (error) {

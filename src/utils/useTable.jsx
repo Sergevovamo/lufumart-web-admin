@@ -8,8 +8,8 @@ import {
 	TablePagination,
 } from '@mui/material';
 
-export default function useTable(records, columns, search) {
-	const pages = [5, 10, 25, 50, 100];
+export default function useTable(totalRecords, records, columns, search) {
+	const pages = [20, 50, 100];
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
 	const [order, setOrder] = useState('asc');
@@ -68,7 +68,7 @@ export default function useTable(records, columns, search) {
 			page={page}
 			rowsPerPageOptions={pages}
 			rowsPerPage={rowsPerPage}
-			count={records?.length ? records?.length : 0}
+			count={records?.length ? totalRecords : 0}
 			onPageChange={handlePageChange}
 			onRowsPerPageChange={handleRowsPerPageChange}
 		/>

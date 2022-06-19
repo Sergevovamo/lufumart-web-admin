@@ -12,16 +12,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import {
-	Table,
 	MenuItem,
 	TableBody,
 	TableCell,
 	TableContainer,
-	TableHead,
 	TableRow,
 	Popover,
 	Tooltip,
 	Paper,
+	Grid,
+	Card,
+	CardHeader,
+	CardContent,
+	CardMedia,
+	CardActions,
+	Collapse,
+	Avatar,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -36,12 +42,17 @@ import {
 	Autocomplete,
 	CircularProgress,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import PopupState, { bindTrigger, bindPopover } from 'material-ui-popup-state';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { useForm } from 'react-hook-form';
+import { orange } from '@mui/material/colors';
 import MoreVert from '@mui/icons-material/MoreVert';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import GridViewOutlined from '@mui/icons-material/GridViewOutlined';
+import ViewDay from '@mui/icons-material/ViewDay';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CloseIcon from '@mui/icons-material/Close';
 import useTable from '../../../utils/useTable';
@@ -49,10 +60,22 @@ import { tokenConfig } from '../../../store/actions/auth-actions';
 import {
 	postProduct,
 	getProducts,
+	getTotalProducts,
 } from '../../../store/actions/product-actions';
 import AdornedButton from '../../../utils/AdornedButton';
 import { numberWithCommas } from '../../../utils/NumberWithCommas';
 import styles from '../../../css/MyProducts.module.css';
+
+const ExpandMore = styled((props) => {
+	const { expand, ...other } = props;
+	return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+	transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+	marginLeft: 'auto',
+	transition: theme.transitions.create('transform', {
+		duration: theme.transitions.duration.shortest,
+	}),
+}));
 
 const MyProducts = () => {
 	const navigate = useNavigate();
@@ -62,6 +85,7 @@ const MyProducts = () => {
 	let auth = useSelector((state) => state.auth);
 	let products = useSelector((state) => state.products);
 	let isLoading = useSelector((state) => state.products?.isLoading);
+	const totalProducts = useSelector((state) => state.products?.totalProducts);
 
 	const [files, setFiles] = useState([]);
 	const [openPopup, setOpenPopup] = useState(false);
@@ -96,6 +120,8 @@ const MyProducts = () => {
 	const [selectedAgeGroup, setSelectedAgeGroup] = useState('Child');
 	const [selectedCondition, setSelectedCondition] = useState('Brand New');
 	const [selectedAvailability, setSelectedAvailability] = useState('In Stock');
+	const [expanded, setExpanded] = useState(false);
+	const [toggleView, setToggleView] = useState(false);
 
 	const loading = open && options.length === 0;
 	const loadingSub = openSub && optionsSub.length === 0;
@@ -153,6 +179,10 @@ const MyProducts = () => {
 		}),
 		[isDragActive, isDragReject, isDragAccept]
 	);
+
+	useEffect(() => {
+		dispatch(getTotalProducts());
+	}, []);
 
 	useEffect(() => {
 		dispatch(getProducts());
@@ -230,7 +260,7 @@ const MyProducts = () => {
 		CustomHead,
 		CustomPagination,
 		recordsAfterPagingAndSorting,
-	} = useTable(data, columns, filteredSearch);
+	} = useTable(totalProducts, data, columns, filteredSearch);
 
 	const handleSearch = (e) => {
 		let target = e.target;
@@ -247,6 +277,14 @@ const MyProducts = () => {
 					});
 			},
 		});
+	};
+
+	const handleExpandClick = () => {
+		setExpanded(!expanded);
+	};
+
+	const handleToggleClick = () => {
+		setToggleView(!toggleView);
 	};
 
 	const handleClickOpen = () => {
@@ -457,174 +495,353 @@ const MyProducts = () => {
 
 	return (
 		<div className={styles.product_container}>
-			<IconButton
+			<Grid
+				container
+				direction="row"
+				justifyContent="space-between"
+				alignItems="center"
 				style={{ marginTop: '1rem' }}
-				onClick={() => navigate('/products')}
 			>
-				<ArrowBackIcon />
-			</IconButton>
-			<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
-				<div
-					style={{
-						display: 'flex',
-						justifyContent: 'space-between',
-						alignItems: 'center',
-						marginTop: '1rem',
-						marginLeft: '1rem',
-						marginRight: '1rem',
-					}}
+				<IconButton onClick={() => navigate('/products')}>
+					<ArrowBackIcon />
+				</IconButton>
+				<Grid
+					item
+					style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
 				>
-					<h3>{products?.products?.length} Products</h3>
-					<Button variant="contained" onClick={handleClickOpen}>
-						Add Product
-					</Button>
-				</div>
-				<CustomTable>
-					<CustomHead />
-					<TableBody>
-						{products?.products?.length > 0 ? (
-							recordsAfterPagingAndSorting()?.map((product) => {
-								const {
-									_id,
-									name,
-									description,
-									owner,
-									currency,
-									category,
-									imageUrl,
-									price,
-									salePrice,
-									updatedAt,
-								} = product;
+					<Typography>View</Typography>
+					<IconButton onClick={handleToggleClick}>
+						{toggleView ? <ViewDay /> : <GridViewOutlined />}
+					</IconButton>
+				</Grid>
+			</Grid>
+			{toggleView ? (
+				<Grid container spacing={2} style={{ marginTop: '.5rem' }}>
+					{products?.products?.length > 0 ? (
+						recordsAfterPagingAndSorting()?.map((product) => {
+							const {
+								_id,
+								name,
+								description,
+								owner,
+								currency,
+								category,
+								imageUrl,
+								price,
+								salePrice,
+								updatedAt,
+							} = product;
 
-								return (
-									<Fragment key={_id}>
-										<TableRow>
-											<TableCell>
-												<img
-													style={{ width: '50px' }}
-													src={imageUrl[0]}
-													alt={name}
-												/>
-											</TableCell>
-											<TableCell>{name}</TableCell>
-											<TableCell align="left">{description}</TableCell>
-											<TableCell align="left">{category?.name}</TableCell>
-											<TableCell align="left">
-												{currency} {numberWithCommas(price)}
-											</TableCell>
-											<TableCell align="left">
-												USD {numberWithCommas(salePrice)}
-											</TableCell>
-											{/* <TableCell align="left">{owner?.name}</TableCell> */}
-											<TableCell>
-												<PopupState
-													variant="popover"
-													popupId="demo-popup-popover"
+							return (
+								<Grid item xs={3} key={_id}>
+									<Card>
+										<CardHeader
+											avatar={
+												<Avatar
+													sx={{ bgcolor: orange[500] }}
+													aria-label="recipe"
 												>
-													{(popupState) => (
-														<>
-															<IconButton {...bindTrigger(popupState)}>
-																<Tooltip
-																	title="More actions"
-																	placement="right"
-																	arrow
-																>
-																	<MoreVert />
-																</Tooltip>
-															</IconButton>
-															<Popover
-																{...bindPopover(popupState)}
-																anchorOrigin={{
-																	vertical: 'top',
-																	horizontal: 'right',
-																}}
-																transformOrigin={{
-																	vertical: 'top',
-																	horizontal: 'right',
-																}}
-																elevation={1}
-															>
-																<Typography
-																	sx={{
-																		display: 'flex',
-																		flexDirection: 'column',
-																		padding: 2,
+													{owner?.name.charAt(0)}
+												</Avatar>
+											}
+											action={
+												<>
+													<PopupState
+														variant="popover"
+														popupId="demo-popup-popover"
+													>
+														{(popupState) => (
+															<>
+																<IconButton {...bindTrigger(popupState)}>
+																	<Tooltip
+																		title="More actions"
+																		placement="right"
+																		arrow
+																	>
+																		<MoreVert />
+																	</Tooltip>
+																</IconButton>
+																<Popover
+																	{...bindPopover(popupState)}
+																	anchorOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
 																	}}
+																	transformOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
+																	}}
+																	elevation={1}
 																>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																		}}
-																		sx={{ padding: 2 }}
-																	>
-																		View
-																	</Link>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
+																	<Typography
+																		sx={{
+																			display: 'flex',
+																			flexDirection: 'column',
+																			padding: 2,
 																		}}
 																	>
-																		Update
-																	</Link>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
-																		}}
-																	>
-																		Suspend
-																	</Link>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
-																		}}
-																	>
-																		Unsuspend
-																	</Link>
-																</Typography>
-															</Popover>
-														</>
-													)}
-												</PopupState>
-											</TableCell>
-										</TableRow>
-									</Fragment>
-								);
-							})
-						) : (
-							<TableRow>
-								<TableCell
-									colSpan={12}
-									style={{ padding: '1rem', textAlign: 'center' }}
-								>
-									{isLoading ? (
-										<CircularProgress
-											variant="indeterminate"
-											disableShrink
-											size={25}
-											thickness={4}
+																		<Link
+																			to="#"
+																			// onClick={(e) =>
+																			// 	handleEditPopup(category, e)
+																			// }
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Update
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Suspend
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Unsuspend
+																		</Link>
+																	</Typography>
+																</Popover>
+															</>
+														)}
+													</PopupState>
+												</>
+											}
+											title={owner?.name}
+											subheader={format(new Date(updatedAt), 'do MMM yyyy')}
 										/>
-									) : (
-										<p>You have no products</p>
-									)}
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</CustomTable>
-				<CustomPagination />
-			</TableContainer>
+
+										<Paper elevation={0} sx={{ padding: '.5rem' }}>
+											<CardMedia
+												component="img"
+												image={imageUrl[0]}
+												alt="Product Category Images"
+											/>
+										</Paper>
+
+										<CardContent>
+											<Typography>{name}</Typography>
+										</CardContent>
+										<CardActions disableSpacing>
+											<ExpandMore
+												expand={expanded}
+												onClick={handleExpandClick}
+												aria-expanded={expanded}
+												aria-label="show more"
+											>
+												<ExpandMoreIcon />
+											</ExpandMore>
+										</CardActions>
+										<Collapse in={expanded} timeout="auto" unmountOnExit>
+											<CardContent>
+												<Typography paragraph>Description:</Typography>
+												<Typography paragraph>{description}</Typography>
+											</CardContent>
+										</Collapse>
+									</Card>
+								</Grid>
+							);
+						})
+					) : (
+						<Grid
+							container
+							direction="row"
+							justifyContent="center"
+							alignItems="center"
+						>
+							<Grid item>
+								{loading ? (
+									<CircularProgress
+										variant="indeterminate"
+										disableShrink
+										size={25}
+										thickness={4}
+									/>
+								) : (
+									<p>You have no product categories</p>
+								)}
+							</Grid>
+						</Grid>
+					)}
+				</Grid>
+			) : (
+				<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+							marginTop: '1rem',
+							marginLeft: '1rem',
+							marginRight: '1rem',
+						}}
+					>
+						<h3>{totalProducts} Products</h3>
+						<Button variant="contained" onClick={handleClickOpen}>
+							Add Product
+						</Button>
+					</div>
+					<CustomTable>
+						<CustomHead />
+						<TableBody>
+							{products?.products?.length > 0 ? (
+								recordsAfterPagingAndSorting()?.map((product) => {
+									const {
+										_id,
+										name,
+										description,
+										owner,
+										currency,
+										category,
+										imageUrl,
+										price,
+										salePrice,
+										updatedAt,
+									} = product;
+
+									return (
+										<Fragment key={_id}>
+											<TableRow>
+												<TableCell>
+													<img
+														style={{ width: '50px' }}
+														src={imageUrl[0]}
+														alt={name}
+													/>
+												</TableCell>
+												<TableCell>{name}</TableCell>
+												<TableCell align="left">{description}</TableCell>
+												<TableCell align="left">{category?.name}</TableCell>
+												<TableCell align="left">
+													{currency} {numberWithCommas(price)}
+												</TableCell>
+												<TableCell align="left">
+													USD {numberWithCommas(salePrice)}
+												</TableCell>
+												{/* <TableCell align="left">{owner?.name}</TableCell> */}
+												<TableCell>
+													<PopupState
+														variant="popover"
+														popupId="demo-popup-popover"
+													>
+														{(popupState) => (
+															<>
+																<IconButton {...bindTrigger(popupState)}>
+																	<Tooltip
+																		title="More actions"
+																		placement="right"
+																		arrow
+																	>
+																		<MoreVert />
+																	</Tooltip>
+																</IconButton>
+																<Popover
+																	{...bindPopover(popupState)}
+																	anchorOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
+																	}}
+																	transformOrigin={{
+																		vertical: 'top',
+																		horizontal: 'right',
+																	}}
+																	elevation={1}
+																>
+																	<Typography
+																		sx={{
+																			display: 'flex',
+																			flexDirection: 'column',
+																			padding: 2,
+																		}}
+																	>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																			}}
+																			sx={{ padding: 2 }}
+																		>
+																			View
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Update
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Suspend
+																		</Link>
+																		<Link
+																			to="#"
+																			style={{
+																				textDecoration: 'none',
+																				color: '#000',
+																				marginTop: 5,
+																			}}
+																		>
+																			Unsuspend
+																		</Link>
+																	</Typography>
+																</Popover>
+															</>
+														)}
+													</PopupState>
+												</TableCell>
+											</TableRow>
+										</Fragment>
+									);
+								})
+							) : (
+								<TableRow>
+									<TableCell
+										colSpan={12}
+										style={{ padding: '1rem', textAlign: 'center' }}
+									>
+										{isLoading ? (
+											<CircularProgress
+												variant="indeterminate"
+												disableShrink
+												size={25}
+												thickness={4}
+											/>
+										) : (
+											<p>You have no products</p>
+										)}
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</CustomTable>
+					<CustomPagination />
+				</TableContainer>
+			)}
+
 			<Dialog fullScreen open={openPopup} onClose={handleCloseDialog}>
 				<AppBar sx={{ position: 'relative' }}>
 					<Toolbar>

@@ -411,11 +411,7 @@ const ProductCategory = () => {
 										/>
 
 										<Paper elevation={0} sx={{ padding: '.5rem' }}>
-											<CardMedia
-												component="img"
-												image={imageUrl}
-												alt="Product Category Images"
-											/>
+											<CardMedia component="img" image={imageUrl} alt={name} />
 										</Paper>
 
 										<CardContent>

@@ -313,128 +313,115 @@ const ProductCategory = () => {
 				</Grid>
 			</Grid>
 			{toggleView ? (
-				<Grid container spacing={2} style={{ marginTop: '.5rem' }}>
+				<div className={styles.products}>
 					{productCategories?.productCategories?.length > 0 ? (
 						recordsAfterPagingAndSorting()?.map((category) => {
 							const { _id, name, description, admin, imageUrl, updatedAt } =
 								category;
 							return (
-								<Grid item xs={3} key={_id}>
-									<Card>
-										<CardHeader
-											avatar={
-												<Avatar
-													sx={{ bgcolor: orange[500] }}
-													aria-label="recipe"
+								<div className={styles.productCard} key={_id}>
+									<CardHeader
+										avatar={
+											<Avatar sx={{ bgcolor: orange[500] }} aria-label="recipe">
+												{admin?.name.charAt(0)}
+											</Avatar>
+										}
+										action={
+											<>
+												<PopupState
+													variant="popover"
+													popupId="demo-popup-popover"
 												>
-													{admin?.name.charAt(0)}
-												</Avatar>
-											}
-											action={
-												<>
-													<PopupState
-														variant="popover"
-														popupId="demo-popup-popover"
-													>
-														{(popupState) => (
-															<>
-																<IconButton {...bindTrigger(popupState)}>
-																	<Tooltip
-																		title="More actions"
-																		placement="right"
-																		arrow
-																	>
-																		<MoreVert />
-																	</Tooltip>
-																</IconButton>
-																<Popover
-																	{...bindPopover(popupState)}
-																	anchorOrigin={{
-																		vertical: 'top',
-																		horizontal: 'right',
-																	}}
-																	transformOrigin={{
-																		vertical: 'top',
-																		horizontal: 'right',
-																	}}
-																	elevation={1}
+													{(popupState) => (
+														<>
+															<IconButton {...bindTrigger(popupState)}>
+																<Tooltip
+																	title="More actions"
+																	placement="right"
+																	arrow
 																>
-																	<Typography
-																		sx={{
-																			display: 'flex',
-																			flexDirection: 'column',
-																			padding: 2,
+																	<MoreVert />
+																</Tooltip>
+															</IconButton>
+															<Popover
+																{...bindPopover(popupState)}
+																anchorOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																transformOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																elevation={1}
+															>
+																<Typography
+																	sx={{
+																		display: 'flex',
+																		flexDirection: 'column',
+																		padding: 2,
+																	}}
+																>
+																	<Link
+																		to="#"
+																		onClick={(e) =>
+																			handleEditPopup(category, e)
+																		}
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
 																		}}
 																	>
-																		<Link
-																			to="#"
-																			onClick={(e) =>
-																				handleEditPopup(category, e)
-																			}
-																			style={{
-																				textDecoration: 'none',
-																				color: '#000',
-																				marginTop: 5,
-																			}}
-																		>
-																			Update
-																		</Link>
-																		<Link
-																			to="#"
-																			style={{
-																				textDecoration: 'none',
-																				color: '#000',
-																				marginTop: 5,
-																			}}
-																		>
-																			Suspend
-																		</Link>
-																		<Link
-																			to="#"
-																			style={{
-																				textDecoration: 'none',
-																				color: '#000',
-																				marginTop: 5,
-																			}}
-																		>
-																			Unsuspend
-																		</Link>
-																	</Typography>
-																</Popover>
-															</>
-														)}
-													</PopupState>
-												</>
-											}
-											title={admin?.name}
-											subheader={format(new Date(updatedAt), 'do MMM yyyy')}
+																		Update
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Suspend
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Unsuspend
+																	</Link>
+																</Typography>
+															</Popover>
+														</>
+													)}
+												</PopupState>
+											</>
+										}
+										title={admin?.name}
+										subheader={format(new Date(updatedAt), 'do MMM yyyy')}
+									/>
+									<div className={styles.productImageCard}>
+										<img
+											className={styles.productImage}
+											src={`${imageUrl}`}
+											alt="product-img"
 										/>
-
-										<Paper elevation={0} sx={{ padding: '.5rem' }}>
-											<CardMedia component="img" image={imageUrl} alt={name} />
-										</Paper>
-
-										<CardContent>
-											<Typography>{name}</Typography>
-										</CardContent>
-										<CardActions disableSpacing>
-											<ExpandMore
-												expand={expanded}
-												onClick={handleExpandClick}
-												aria-expanded={expanded}
-												aria-label="show more"
-											>
-												<ExpandMoreIcon />
-											</ExpandMore>
-										</CardActions>
-										<Collapse in={expanded} timeout="auto" unmountOnExit>
-											<CardContent>
-												<Typography paragraph>Description:</Typography>
-												<Typography paragraph>{description}</Typography>
-											</CardContent>
-										</Collapse>
-									</Card>
-								</Grid>
+									</div>
+									<h4
+										style={{
+											color: '#141432',
+											marginTop: '1rem',
+											fontSize: '1rem',
+										}}
+									>
+										{name}
+									</h4>
+								</div>
 							);
 						})
 					) : (
@@ -458,7 +445,7 @@ const ProductCategory = () => {
 							</Grid>
 						</Grid>
 					)}
-				</Grid>
+				</div>
 			) : (
 				<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
 					<div

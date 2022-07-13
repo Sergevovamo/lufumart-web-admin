@@ -376,12 +376,19 @@ export const getTotalProducts = () => async (dispatch) => {
 	}
 };
 
-export const getProducts = () => async (dispatch) => {
+export const getProducts = (payload) => async (dispatch) => {
 	const token = tokenConfig();
 
 	try {
+		const { page, limit } = payload;
+		let currentPage = page + 1;
+		console.log(limit);
+
 		dispatch({ type: PRODUCT_LOADING });
-		const response = await axios.get(`${PRODUCTS_SERVER}`, token);
+		const response = await axios.get(
+			`${PRODUCTS_SERVER}?page=${currentPage}&limit=${limit}`,
+			token
+		);
 		const data = await response.data;
 
 		// console.log(data);

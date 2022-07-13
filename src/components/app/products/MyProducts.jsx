@@ -41,6 +41,7 @@ import {
 	Typography,
 	Autocomplete,
 	CircularProgress,
+	TablePagination,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -123,6 +124,10 @@ const MyProducts = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [toggleView, setToggleView] = useState(false);
 
+	const pages = [20, 50, 100];
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
+
 	const loading = open && options.length === 0;
 	const loadingSub = openSub && optionsSub.length === 0;
 
@@ -185,8 +190,13 @@ const MyProducts = () => {
 	}, []);
 
 	useEffect(() => {
-		dispatch(getProducts());
-	}, []);
+		const payload = {
+			page,
+			limit: rowsPerPage,
+		};
+
+		dispatch(getProducts(payload));
+	}, [page, rowsPerPage]);
 
 	useEffect(() => {
 		let active = true;
@@ -277,6 +287,15 @@ const MyProducts = () => {
 					});
 			},
 		});
+	};
+
+	const handlePageChange = (event, newPage) => {
+		setPage(newPage);
+	};
+
+	const handleRowsPerPageChange = (event) => {
+		setRowsPerPage(parseInt(event.target.value, 10));
+		setPage(0);
 	};
 
 	const handleExpandClick = () => {
@@ -516,7 +535,7 @@ const MyProducts = () => {
 				</Grid>
 			</Grid>
 			{toggleView ? (
-				<Grid container spacing={2} style={{ marginTop: '.5rem' }}>
+				<div className={styles.products}>
 					{products?.products?.length > 0 ? (
 						recordsAfterPagingAndSorting()?.map((product) => {
 							const {
@@ -533,126 +552,121 @@ const MyProducts = () => {
 							} = product;
 
 							return (
-								<Grid item xs={3} key={_id}>
-									<Card>
-										<CardHeader
-											avatar={
-												<Avatar
-													sx={{ bgcolor: orange[500] }}
-													aria-label="recipe"
+								<div className={styles.productCard} key={_id}>
+									<CardHeader
+										avatar={
+											<Avatar sx={{ bgcolor: orange[500] }} aria-label="recipe">
+												{owner?.name.charAt(0)}
+											</Avatar>
+										}
+										action={
+											<>
+												<PopupState
+													variant="popover"
+													popupId="demo-popup-popover"
 												>
-													{owner?.name.charAt(0)}
-												</Avatar>
-											}
-											action={
-												<>
-													<PopupState
-														variant="popover"
-														popupId="demo-popup-popover"
-													>
-														{(popupState) => (
-															<>
-																<IconButton {...bindTrigger(popupState)}>
-																	<Tooltip
-																		title="More actions"
-																		placement="right"
-																		arrow
-																	>
-																		<MoreVert />
-																	</Tooltip>
-																</IconButton>
-																<Popover
-																	{...bindPopover(popupState)}
-																	anchorOrigin={{
-																		vertical: 'top',
-																		horizontal: 'right',
-																	}}
-																	transformOrigin={{
-																		vertical: 'top',
-																		horizontal: 'right',
-																	}}
-																	elevation={1}
+													{(popupState) => (
+														<>
+															<IconButton {...bindTrigger(popupState)}>
+																<Tooltip
+																	title="More actions"
+																	placement="right"
+																	arrow
 																>
-																	<Typography
-																		sx={{
-																			display: 'flex',
-																			flexDirection: 'column',
-																			padding: 2,
+																	<MoreVert />
+																</Tooltip>
+															</IconButton>
+															<Popover
+																{...bindPopover(popupState)}
+																anchorOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																transformOrigin={{
+																	vertical: 'top',
+																	horizontal: 'right',
+																}}
+																elevation={1}
+															>
+																<Typography
+																	sx={{
+																		display: 'flex',
+																		flexDirection: 'column',
+																		padding: 2,
+																	}}
+																>
+																	<Link
+																		to="#"
+																		onClick={(e) =>
+																			handleEditPopup(category, e)
+																		}
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
 																		}}
 																	>
-																		<Link
-																			to="#"
-																			// onClick={(e) =>
-																			// 	handleEditPopup(category, e)
-																			// }
-																			style={{
-																				textDecoration: 'none',
-																				color: '#000',
-																				marginTop: 5,
-																			}}
-																		>
-																			Update
-																		</Link>
-																		<Link
-																			to="#"
-																			style={{
-																				textDecoration: 'none',
-																				color: '#000',
-																				marginTop: 5,
-																			}}
-																		>
-																			Suspend
-																		</Link>
-																		<Link
-																			to="#"
-																			style={{
-																				textDecoration: 'none',
-																				color: '#000',
-																				marginTop: 5,
-																			}}
-																		>
-																			Unsuspend
-																		</Link>
-																	</Typography>
-																</Popover>
-															</>
-														)}
-													</PopupState>
-												</>
-											}
-											title={owner?.name}
-											subheader={format(new Date(updatedAt), 'do MMM yyyy')}
+																		Update
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Suspend
+																	</Link>
+																	<Link
+																		to="#"
+																		style={{
+																			textDecoration: 'none',
+																			color: '#000',
+																			marginTop: 5,
+																		}}
+																	>
+																		Unsuspend
+																	</Link>
+																</Typography>
+															</Popover>
+														</>
+													)}
+												</PopupState>
+											</>
+										}
+										title={owner?.name}
+										subheader={format(new Date(updatedAt), 'do MMM yyyy')}
+									/>
+									<div className={styles.productImageCard}>
+										<img
+											className={styles.productImage}
+											src={`${imageUrl[0]}`}
+											alt="product-img"
 										/>
-
-										<Paper elevation={0} sx={{ padding: '.5rem' }}>
-											<CardMedia
-												component="img"
-												image={imageUrl[0]}
-												alt="Product Category Images"
-											/>
-										</Paper>
-
-										<CardContent>
-											<Typography>{name}</Typography>
-										</CardContent>
-										<CardActions disableSpacing>
-											<ExpandMore
-												expand={expanded}
-												onClick={handleExpandClick}
-												aria-expanded={expanded}
-												aria-label="show more"
-											>
-												<ExpandMoreIcon />
-											</ExpandMore>
-										</CardActions>
-										<Collapse in={expanded} timeout="auto" unmountOnExit>
-											<CardContent>
-												<Typography paragraph>Description:</Typography>
-												<Typography paragraph>{description}</Typography>
-											</CardContent>
-										</Collapse>
-									</Card>
-								</Grid>
+									</div>
+									<h4
+										style={{
+											color: '#141432',
+											marginTop: '.5rem',
+											fontSize: '1rem',
+											whiteSpace: 'nowrap',
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+										}}
+									>
+										{name}
+									</h4>
+									<h4
+										style={{
+											color: '#02AB55',
+											marginTop: '.5rem',
+											fontSize: '1rem',
+										}}
+									>
+										USD ${salePrice}
+									</h4>
+								</div>
 							);
 						})
 					) : (
@@ -676,7 +690,7 @@ const MyProducts = () => {
 							</Grid>
 						</Grid>
 					)}
-				</Grid>
+				</div>
 			) : (
 				<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
 					<div
@@ -729,7 +743,7 @@ const MyProducts = () => {
 													{currency} {numberWithCommas(price)}
 												</TableCell>
 												<TableCell align="left">
-													USD {numberWithCommas(salePrice)}
+													USD ${numberWithCommas(salePrice)}
 												</TableCell>
 												{/* <TableCell align="left">{owner?.name}</TableCell> */}
 												<TableCell>
@@ -838,7 +852,17 @@ const MyProducts = () => {
 							)}
 						</TableBody>
 					</CustomTable>
-					<CustomPagination />
+					{/* <CustomPagination /> */}
+					<TablePagination
+						sx={{ overflow: 'hidden' }}
+						component="div"
+						page={page}
+						rowsPerPageOptions={pages}
+						rowsPerPage={rowsPerPage}
+						count={totalProducts ? totalProducts : 0}
+						onPageChange={handlePageChange}
+						onRowsPerPageChange={handleRowsPerPageChange}
+					/>
 				</TableContainer>
 			)}
 

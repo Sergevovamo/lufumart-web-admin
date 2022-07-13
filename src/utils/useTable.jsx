@@ -51,6 +51,7 @@ export default function useTable(totalRecords, records, columns, search) {
 	};
 
 	const handlePageChange = (event, newPage) => {
+		console.log(newPage);
 		setPage(newPage);
 	};
 
@@ -59,7 +60,7 @@ export default function useTable(totalRecords, records, columns, search) {
 		setPage(0);
 	};
 
-	// console.log(records);
+	// console.log(records);0728 475 145
 
 	const CustomPagination = () => (
 		<TablePagination
@@ -101,16 +102,14 @@ export default function useTable(totalRecords, records, columns, search) {
 	}
 
 	const recordsAfterPagingAndSorting = () => {
-		return stableSort(search.fn(records), getComparator(order, orderBy)).slice(
-			page * rowsPerPage,
-			(page + 1) * rowsPerPage
-		);
+		return stableSort(search.fn(records), getComparator(order, orderBy));
 	};
 
 	return {
 		CustomTable,
 		CustomHead,
 		CustomPagination,
+		records,
 		recordsAfterPagingAndSorting,
 	};
 }

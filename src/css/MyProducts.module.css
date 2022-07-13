@@ -64,5 +64,6 @@
 }
 .productImage {
 	aspect-ratio: 1 / 1;
+	object-fit: contain;
 	width: 100%;
 }

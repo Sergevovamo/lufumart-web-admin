@@ -51,7 +51,6 @@ export default function useTable(totalRecords, records, columns, search) {
 	};
 
 	const handlePageChange = (event, newPage) => {
-		console.log(newPage);
 		setPage(newPage);
 	};
 
@@ -59,8 +58,6 @@ export default function useTable(totalRecords, records, columns, search) {
 		setRowsPerPage(parseInt(event.target.value, 10));
 		setPage(0);
 	};
-
-	// console.log(records);0728 475 145
 
 	const CustomPagination = () => (
 		<TablePagination

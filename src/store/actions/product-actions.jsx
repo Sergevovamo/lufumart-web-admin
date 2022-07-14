@@ -380,25 +380,27 @@ export const getProducts = (payload) => async (dispatch) => {
 	const token = tokenConfig();
 
 	try {
-		const { page, limit } = payload;
-		let currentPage = page + 1;
-		console.log(limit);
+		if (payload) {
+			const { page, limit } = payload;
+			let currentPage = page + 1;
 
-		dispatch({ type: PRODUCT_LOADING });
-		const response = await axios.get(
-			`${PRODUCTS_SERVER}?page=${currentPage}&limit=${limit}`,
-			token
-		);
-		const data = await response.data;
+			dispatch({ type: PRODUCT_LOADING });
 
-		// console.log(data);
-		await dispatch({
-			type: GET_PRODUCTS,
-			payload: data,
-		});
-		dispatch(clearErrors());
+			const response = await axios.get(
+				`${PRODUCTS_SERVER}?page=${currentPage}&limit=${limit}`,
+				token
+			);
+			const data = await response.data;
+
+			// console.log(data);
+			await dispatch({
+				type: GET_PRODUCTS,
+				payload: data,
+			});
+			dispatch(clearErrors());
+		}
 	} catch (error) {
-		console.log(error.response.data);
+		console.log(error);
 		toast.error('Error. Something went wrong!');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'GET_PRODUCTS')

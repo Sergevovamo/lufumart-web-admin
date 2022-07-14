@@ -21,12 +21,7 @@ import {
 	Tooltip,
 	Paper,
 	Grid,
-	Card,
 	CardHeader,
-	CardContent,
-	CardMedia,
-	CardActions,
-	Collapse,
 	Avatar,
 	Dialog,
 	DialogActions,
@@ -90,6 +85,7 @@ const MyProducts = () => {
 
 	const [files, setFiles] = useState([]);
 	const [openPopup, setOpenPopup] = useState(false);
+	const [openEditPopup, setOpenEditPopup] = useState(false);
 	const [buttonLoading, setButtonLoading] = useState(false);
 
 	const [open, setOpen] = useState(false);
@@ -100,6 +96,11 @@ const MyProducts = () => {
 
 	const [selectedCategory, setSelectedCategory] = useState([]);
 	const [selectedSubCategory, setSelectedSubCategory] = useState([]);
+
+	// On edit mode
+	const [updatedProduct, setUpdatedProduct] = useState([]);
+	const [updatedCategory, setUpdatedCategory] = useState('');
+	const [updatedSubCategory, setUpdatedSubCategory] = useState('');
 
 	const [availabilityDate, setAvailabilityDate] = useState(new Date());
 	const [startDateValue, setStartDateValue] = useState(new Date());
@@ -124,7 +125,7 @@ const MyProducts = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [toggleView, setToggleView] = useState(false);
 
-	const pages = [20, 50, 100];
+	const pages = [20, 50, 100, 250];
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
 
@@ -140,6 +141,7 @@ const MyProducts = () => {
 	const {
 		register,
 		getValues,
+		reset,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
@@ -227,14 +229,16 @@ const MyProducts = () => {
 			return undefined;
 		}
 		(async () => {
-			const response = await axios.get(
-				`https://api-v1.lufumart.com/api/v1/product-sub-categories/get-sub-category-by-category?categoryId=${selectedCategory?._id}`,
-				token
-			);
-			const subCategories = await response.data;
+			if (selectedCategory?._id) {
+				const response = await axios.get(
+					`https://api-v1.lufumart.com/api/v1/product-sub-categories/get-sub-category-by-category?categoryId=${selectedCategory?._id}`,
+					token
+				);
+				const subCategories = await response.data;
 
-			if (active) {
-				setOptionsSub(subCategories);
+				if (active) {
+					setOptionsSub(subCategories);
+				}
 			}
 		})();
 		return () => {
@@ -309,9 +313,131 @@ const MyProducts = () => {
 	const handleClickOpen = () => {
 		setOpenPopup(true);
 	};
+	console.log(selectedCategory);
+
+	const handleEditPopup = (data, e) => {
+		e.preventDefault();
+
+		const {
+			ageGroup,
+			availability,
+			availabilityDate,
+			brand,
+			category,
+			cloudinaryId,
+			color,
+			condition,
+			createdAt,
+			currency,
+			description,
+			gender,
+			globalTradeItemNumber,
+			imageUrl,
+			inventoryThreshold,
+			locality,
+			manufactererPartNumber,
+			name,
+			model,
+			owner,
+			price,
+			quantity,
+			salePrice,
+			salePriceEffectiveStartDate,
+			salePriceEffectiveEndDate,
+			size,
+			subCategory,
+			updatedAt,
+			weight,
+		} = data;
+		setUpdatedProduct(data);
+
+		let weightUnit = weight.replace(/(\d)/g, ''); // retrieve unit in weight kg/g
+		let weightValue = weight.replace(/(\D)/g, ''); // retrieve value in weight
+
+		reset({
+			name,
+			model,
+			brand,
+			color,
+			price,
+			quantity,
+			description,
+			inventoryThreshold,
+			manufactererPartNumber,
+			category: category.name,
+
+			// form field only
+			weight_quantity: weightValue,
+		});
+
+		if (weightUnit == ' g') {
+			// remove space ' g' to 'g'
+			setSelectedWeightUnit(weightUnit.replace(/\s/g, ''));
+		}
+
+		setSelectedCategory(category);
+		setSelectedSubCategory(subCategory);
+		setUpdatedCategory(category.name);
+		setUpdatedSubCategory(subCategory.name);
+		setSize(size);
+		setWeight(weight);
+		setSalePrice(salePrice);
+		setSelectedGender(gender);
+		setSelectedAgeGroup(ageGroup);
+		setSelectedLocality(locality);
+		setSelectedCurrency(currency);
+		setSelectedCondition(condition);
+		setSelectedAvailability(availability);
+		setAvailabilityDate(availabilityDate);
+		setStartDateValue(salePriceEffectiveStartDate);
+		setEndDateValue(salePriceEffectiveEndDate);
+
+		// setUpdatedCategory(data);
+		setOpenEditPopup(true);
+	};
 
 	const handleCloseDialog = () => {
 		setOpenPopup(false);
+	};
+
+	const handleCloseEditDialog = () => {
+		reset({
+			name: '',
+			model: '',
+			brand: '',
+			color: '',
+			price: '',
+			quantity: '',
+			description: '',
+			inventoryThreshold: '',
+			manufactererPartNumber: '',
+			// form field only
+			weight_quantity: '',
+		});
+
+		setUpdatedProduct([]);
+
+		setSelectedWeightUnit('g');
+		setUpdatedCategory('');
+		setUpdatedSubCategory('');
+
+		setSelectedCategory([]);
+		setSelectedSubCategory([]);
+
+		setSize('0 * 0 * 0');
+		setWeight('0');
+		setSalePrice(0);
+		setSelectedGender('Unisex');
+		setSelectedAgeGroup('Child');
+		setSelectedLocality('International');
+		setSelectedCurrency('KES');
+		setSelectedCondition('Brand New');
+		setSelectedAvailability('In Stock');
+		setAvailabilityDate(new Date());
+		setStartDateValue(new Date());
+		setEndDateValue(new Date());
+
+		setOpenEditPopup(false);
 	};
 
 	const handleChangeCondition = (event) => {
@@ -481,6 +607,95 @@ const MyProducts = () => {
 		handleCloseDialog();
 	};
 
+	const onSubmitEdit = async (data, e) => {
+		e.preventDefault();
+		// setButtonLoading(true);
+
+		const {
+			name,
+			model,
+			brand,
+			color,
+			locality,
+			gender,
+			ageGroup,
+			// size, use the one from state
+			price,
+			currency,
+			// salePrice, use the one from state
+			quantity,
+			description,
+			condition,
+			inventoryThreshold,
+			availability,
+			manufactererPartNumber,
+		} = data;
+
+		let today = new Date();
+
+		if (availabilityDate < today) {
+			return toast.error(
+				`Error! Availaibility date must be 1 day ahead current date.`
+			);
+		}
+
+		if (startDateValue < availabilityDate) {
+			return toast.error(
+				`Error! Sale start date can't be less than availability date.`
+			);
+		}
+
+		if (endDateValue < startDateValue) {
+			return toast.error(`Error! Sale end date can't be less than start date.`);
+		}
+
+		const newData = {
+			name: name ? name : updatedProduct?.name,
+			brand: brand ? brand : updatedProduct?.brand,
+			model: model ? model : updatedProduct?.model,
+			color: color ? color : updatedProduct?.color,
+			locality: locality ? locality : updatedProduct?.locality,
+			gender: gender ? gender : updatedProduct?.gender,
+			ageGroup: ageGroup ? ageGroup : updatedProduct?.ageGroup,
+			size: size ? size : updatedProduct?.size,
+			weight: weight ? weight : updatedProduct?.weight,
+			currency: currency ? currency : updatedProduct?.currency,
+			price: parseInt(price) ? parseInt(price) : updatedProduct?.price,
+			salePrice: parseInt(salePrice)
+				? parseInt(salePrice)
+				: updatedProduct?.salePrice,
+			quantity: parseInt(quantity)
+				? parseInt(quantity)
+				: updatedProduct?.quantity,
+			files: files?.length > 0 && files, // not necessary to upload files in edit
+			categoryId: selectedCategory?._id
+				? selectedCategory?._id
+				: updatedProduct?.category?._id,
+			subCategoryId: selectedSubCategory?._id
+				? selectedSubCategory?._id
+				: updatedProduct?.subCategory?._id,
+			description: description ? description : updatedProduct?.description,
+			condition: condition ? condition : updatedProduct?.condition,
+			inventoryThreshold: parseInt(inventoryThreshold),
+			availability: availability ? availability : updatedProduct?.availability,
+			availabilityDate: availabilityDate
+				? availabilityDate
+				: updatedProduct?.availabilityDate,
+			salePriceEffectiveStartDate: startDateValue
+				? startDateValue
+				: updatedProduct?.startDateValue,
+			salePriceEffectiveEndDate: endDateValue
+				? endDateValue
+				: updatedProduct?.endDateValue,
+			manufactererPartNumber: manufactererPartNumber
+				? manufactererPartNumber
+				: updatedProduct?.manufactererPartNumber,
+			globalTradeItemNumber: '',
+		};
+
+		console.log(newData);
+	};
+
 	const thumbs = files.map((file) => (
 		<div
 			key={file.name}
@@ -597,9 +812,7 @@ const MyProducts = () => {
 																>
 																	<Link
 																		to="#"
-																		onClick={(e) =>
-																			handleEditPopup(category, e)
-																		}
+																		onClick={(e) => handleEditPopup(product, e)}
 																		style={{
 																			textDecoration: 'none',
 																			color: '#000',
@@ -645,18 +858,9 @@ const MyProducts = () => {
 											alt="product-img"
 										/>
 									</div>
-									<h4
-										style={{
-											color: '#141432',
-											marginTop: '.5rem',
-											fontSize: '1rem',
-											whiteSpace: 'nowrap',
-											overflow: 'hidden',
-											textOverflow: 'ellipsis',
-										}}
-									>
-										{name}
-									</h4>
+									<div className={styles.productName}>
+										<h4>{name}</h4>
+									</div>
 									<h4
 										style={{
 											color: '#02AB55',
@@ -793,6 +997,9 @@ const MyProducts = () => {
 																		</Link>
 																		<Link
 																			to="#"
+																			onClick={(e) =>
+																				handleEditPopup(product, e)
+																			}
 																			style={{
 																				textDecoration: 'none',
 																				color: '#000',
@@ -852,7 +1059,6 @@ const MyProducts = () => {
 							)}
 						</TableBody>
 					</CustomTable>
-					{/* <CustomPagination /> */}
 					<TablePagination
 						sx={{ overflow: 'hidden' }}
 						component="div"
@@ -866,26 +1072,38 @@ const MyProducts = () => {
 				</TableContainer>
 			)}
 
-			<Dialog fullScreen open={openPopup} onClose={handleCloseDialog}>
+			<Dialog
+				fullScreen
+				open={openEditPopup ? openEditPopup : openPopup}
+				onClose={handleCloseDialog}
+			>
 				<AppBar sx={{ position: 'relative' }}>
 					<Toolbar>
 						<IconButton
 							edge="start"
 							color="inherit"
-							onClick={handleCloseDialog}
+							onClick={
+								openEditPopup ? handleCloseEditDialog : handleCloseDialog
+							}
 							aria-label="close"
 						>
 							<CloseIcon />
 						</IconButton>
 						<Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-							Add Product
+							{openEditPopup ? 'Edit Product Category' : 'Add Product'}
 						</Typography>
 					</Toolbar>
 				</AppBar>
-				<form onSubmit={handleSubmit(onSubmit)}>
+				<form
+					onSubmit={
+						openEditPopup ? handleSubmit(onSubmitEdit) : handleSubmit(onSubmit)
+					}
+				>
 					<DialogContent>
 						<DialogContentText style={{ marginBottom: '.8rem' }}>
-							Create product to specific category to allow easy classification.
+							{`${
+								openEditPopup ? `Edit` : `Create`
+							} product to specific category to allow easy classification.`}
 						</DialogContentText>
 						<div
 							style={{
@@ -896,6 +1114,7 @@ const MyProducts = () => {
 							}}
 						>
 							<Autocomplete
+								inputValue={updatedCategory}
 								id="category"
 								style={{ marginBottom: '1rem' }}
 								open={open}
@@ -905,12 +1124,12 @@ const MyProducts = () => {
 								onClose={() => {
 									setOpen(false);
 								}}
+								options={options}
 								onChange={(event, value) => selectedOption(value)}
 								isOptionEqualToValue={(option, value) => {
 									return option.name === value.name;
 								}}
 								getOptionLabel={(option) => option.name}
-								options={options}
 								loading={loading}
 								fullWidth
 								sx={{ width: '91%' }}
@@ -941,6 +1160,7 @@ const MyProducts = () => {
 								)}
 							/>
 							<Autocomplete
+								inputValue={updatedSubCategory}
 								id="sub_category"
 								style={{ marginBottom: '1rem' }}
 								open={openSub}
@@ -1225,7 +1445,9 @@ const MyProducts = () => {
 						>
 							<TextField
 								{...register('length', {
-									required: 'Product length is required!',
+									required: !openEditPopup
+										? 'Product length is required!'
+										: false,
 									shouldFocus: true,
 								})}
 								style={{ marginBottom: '.8rem' }}
@@ -1240,7 +1462,9 @@ const MyProducts = () => {
 
 							<TextField
 								{...register('width', {
-									required: 'Product width is required!',
+									required: !openEditPopup
+										? 'Product width is required!'
+										: false,
 									shouldFocus: true,
 								})}
 								style={{ marginBottom: '.8rem' }}
@@ -1255,7 +1479,9 @@ const MyProducts = () => {
 
 							<TextField
 								{...register('height', {
-									required: 'Product width is required!',
+									required: !openEditPopup
+										? 'Product width is required!'
+										: false,
 									shouldFocus: true,
 								})}
 								style={{ marginBottom: '.8rem' }}
@@ -1409,6 +1635,29 @@ const MyProducts = () => {
 							</div>
 						</LocalizationProvider>
 
+						<div
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								gap: '1rem',
+							}}
+						>
+							{updatedProduct.imageUrl?.map((image, index) => {
+								return (
+									<div className={styles.imageCard} key={index}>
+										<div className={styles.productImageCard}>
+											<img
+												className={styles.productImage}
+												src={`${image}`}
+												alt="product-img"
+											/>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+
 						<div {...getRootProps({ style })}>
 							<input {...getInputProps()} />
 							<div>Drag and drop your images here.</div>
@@ -1445,14 +1694,20 @@ const MyProducts = () => {
 						/>
 					</DialogContent>
 					<DialogActions sx={{ marginRight: '1rem', marginBottom: '1rem' }}>
-						<Button onClick={handleCloseDialog}>Cancel</Button>
+						<Button
+							onClick={
+								openEditPopup ? handleCloseEditDialog : handleCloseDialog
+							}
+						>
+							Cancel
+						</Button>
 						<AdornedButton
 							type="submit"
 							disabled={buttonLoading ? true : false}
 							loading={buttonLoading}
 							variant="contained"
 						>
-							Create
+							{openEditPopup ? 'Update' : 'Create'}
 						</AdornedButton>
 					</DialogActions>
 				</form>

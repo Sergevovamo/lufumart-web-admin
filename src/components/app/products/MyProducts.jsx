@@ -313,7 +313,6 @@ const MyProducts = () => {
 	const handleClickOpen = () => {
 		setOpenPopup(true);
 	};
-	console.log(selectedCategory);
 
 	const handleEditPopup = (data, e) => {
 		e.preventDefault();
@@ -349,6 +348,7 @@ const MyProducts = () => {
 			updatedAt,
 			weight,
 		} = data;
+
 		setUpdatedProduct(data);
 
 		let weightUnit = weight.replace(/(\d)/g, ''); // retrieve unit in weight kg/g
@@ -377,8 +377,8 @@ const MyProducts = () => {
 
 		setSelectedCategory(category);
 		setSelectedSubCategory(subCategory);
-		setUpdatedCategory(category.name);
-		setUpdatedSubCategory(subCategory.name);
+		setUpdatedCategory(category);
+		setUpdatedSubCategory(subCategory);
 		setSize(size);
 		setWeight(weight);
 		setSalePrice(salePrice);
@@ -1113,98 +1113,198 @@ const MyProducts = () => {
 								marginBottom: '1rem',
 							}}
 						>
-							<Autocomplete
-								inputValue={updatedCategory}
-								id="category"
-								style={{ marginBottom: '1rem' }}
-								open={open}
-								onOpen={() => {
-									setOpen(true);
-								}}
-								onClose={() => {
-									setOpen(false);
-								}}
-								options={options}
-								onChange={(event, value) => selectedOption(value)}
-								isOptionEqualToValue={(option, value) => {
-									return option.name === value.name;
-								}}
-								getOptionLabel={(option) => option.name}
-								loading={loading}
-								fullWidth
-								sx={{ width: '91%' }}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										{...register('category', {
-											required: 'Product category is required!',
-											shouldFocus: true,
-										})}
-										sx={{ marginBottom: '.8rem' }}
-										label="Select Product Category"
-										variant="outlined"
-										InputProps={{
-											...params.InputProps,
-											endAdornment: (
-												<>
-													{loading ? (
-														<CircularProgress color="inherit" size={20} />
-													) : null}
-													{params.InputProps.endAdornment}
-												</>
-											),
-										}}
-										error={errors?.category ? true : false}
-										helperText={errors?.category?.message}
-									/>
-								)}
-							/>
-							<Autocomplete
-								inputValue={updatedSubCategory}
-								id="sub_category"
-								style={{ marginBottom: '1rem' }}
-								open={openSub}
-								onOpen={() => {
-									setOpenSub(true);
-								}}
-								onClose={() => {
-									setOpenSub(false);
-								}}
-								onChange={(event, value) => selectedOptionSub(value)}
-								isOptionEqualToValue={(option, value) => {
-									return option.name === value.name;
-								}}
-								getOptionLabel={(option) => option.name}
-								options={optionsSub}
-								loading={loadingSub}
-								fullWidth
-								sx={{ width: '91%' }}
-								renderInput={(params) => (
-									<TextField
-										{...params}
-										{...register('subCategory', {
-											required: 'Product sub category is required!',
-											shouldFocus: true,
-										})}
-										sx={{ marginBottom: '.8rem' }}
-										label="Select Product Sub Category"
-										variant="outlined"
-										InputProps={{
-											...params.InputProps,
-											endAdornment: (
-												<>
-													{loadingSub ? (
-														<CircularProgress color="inherit" size={20} />
-													) : null}
-													{params.InputProps.endAdornment}
-												</>
-											),
-										}}
-										error={errors?.subCategory ? true : false}
-										helperText={errors?.subCategory?.message}
-									/>
-								)}
-							/>
+							{openEditPopup ? (
+								<Autocomplete
+									defaultValue={updatedCategory}
+									id="category"
+									style={{ marginBottom: '1rem' }}
+									open={open}
+									onOpen={() => {
+										setOpen(true);
+									}}
+									onClose={() => {
+										setOpen(false);
+									}}
+									options={options}
+									onChange={(event, value) => selectedOption(value)}
+									isOptionEqualToValue={(option, value) => {
+										return option.name === value.name;
+									}}
+									getOptionLabel={(option) => option.name}
+									loading={loading}
+									fullWidth
+									sx={{ width: '91%' }}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											{...register('category', {
+												required: 'Product category is required!',
+												shouldFocus: true,
+											})}
+											sx={{ marginBottom: '.8rem' }}
+											label="Select Product Category"
+											variant="outlined"
+											InputProps={{
+												...params.InputProps,
+												endAdornment: (
+													<>
+														{loading ? (
+															<CircularProgress color="inherit" size={20} />
+														) : null}
+														{params.InputProps.endAdornment}
+													</>
+												),
+											}}
+											error={errors?.category ? true : false}
+											helperText={errors?.category?.message}
+										/>
+									)}
+								/>
+							) : (
+								<Autocomplete
+									id="category"
+									style={{ marginBottom: '1rem' }}
+									open={open}
+									onOpen={() => {
+										setOpen(true);
+									}}
+									onClose={() => {
+										setOpen(false);
+									}}
+									options={options}
+									onChange={(event, value) => selectedOption(value)}
+									isOptionEqualToValue={(option, value) => {
+										return option.name === value.name;
+									}}
+									getOptionLabel={(option) => option.name}
+									loading={loading}
+									fullWidth
+									sx={{ width: '91%' }}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											{...register('category', {
+												required: 'Product category is required!',
+												shouldFocus: true,
+											})}
+											sx={{ marginBottom: '.8rem' }}
+											label="Select Product Category"
+											variant="outlined"
+											InputProps={{
+												...params.InputProps,
+												endAdornment: (
+													<>
+														{loading ? (
+															<CircularProgress color="inherit" size={20} />
+														) : null}
+														{params.InputProps.endAdornment}
+													</>
+												),
+											}}
+											error={errors?.category ? true : false}
+											helperText={errors?.category?.message}
+										/>
+									)}
+								/>
+							)}
+
+							{openEditPopup ? (
+								<Autocomplete
+									defaultValue={updatedSubCategory}
+									id="sub_category"
+									style={{ marginBottom: '1rem' }}
+									open={openSub}
+									onOpen={() => {
+										setOpenSub(true);
+									}}
+									onClose={() => {
+										setOpenSub(false);
+									}}
+									onChange={(event, value) => selectedOptionSub(value)}
+									isOptionEqualToValue={(option, value) => {
+										return option.name === value.name;
+									}}
+									getOptionLabel={(option) => option.name}
+									options={optionsSub}
+									loading={loadingSub}
+									fullWidth
+									sx={{ width: '91%' }}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											{...register('subCategory', {
+												required: !openEditPopup
+													? 'Product sub category is required!'
+													: false, // to avoid error
+												shouldFocus: true,
+											})}
+											sx={{ marginBottom: '.8rem' }}
+											label="Select Product Sub Category"
+											variant="outlined"
+											InputProps={{
+												...params.InputProps,
+												endAdornment: (
+													<>
+														{loadingSub ? (
+															<CircularProgress color="inherit" size={20} />
+														) : null}
+														{params.InputProps.endAdornment}
+													</>
+												),
+											}}
+											error={errors?.subCategory ? true : false}
+											helperText={errors?.subCategory?.message}
+										/>
+									)}
+								/>
+							) : (
+								<Autocomplete
+									id="sub_category"
+									style={{ marginBottom: '1rem' }}
+									open={openSub}
+									onOpen={() => {
+										setOpenSub(true);
+									}}
+									onClose={() => {
+										setOpenSub(false);
+									}}
+									onChange={(event, value) => selectedOptionSub(value)}
+									isOptionEqualToValue={(option, value) => {
+										return option.name === value.name;
+									}}
+									getOptionLabel={(option) => option.name}
+									options={optionsSub}
+									loading={loadingSub}
+									fullWidth
+									sx={{ width: '91%' }}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											{...register('subCategory', {
+												required: 'Product sub category is required!',
+												shouldFocus: true,
+											})}
+											sx={{ marginBottom: '.8rem' }}
+											label="Select Product Sub Category"
+											variant="outlined"
+											InputProps={{
+												...params.InputProps,
+												endAdornment: (
+													<>
+														{loadingSub ? (
+															<CircularProgress color="inherit" size={20} />
+														) : null}
+														{params.InputProps.endAdornment}
+													</>
+												),
+											}}
+											error={errors?.subCategory ? true : false}
+											helperText={errors?.subCategory?.message}
+										/>
+									)}
+								/>
+							)}
+
 							<TextField
 								{...register('name', {
 									required: 'Product name is required!',

@@ -436,7 +436,7 @@ export const updateProduct = (payload) => async (dispatch) => {
 				});
 			});
 
-			toast.success(`Success! New product added.`);
+			toast.success(`Success! Product updated successfully.`);
 		}
 
 		dispatch(clearErrors());

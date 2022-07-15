@@ -10,6 +10,7 @@ import {
 	GET_PRODUCT_CATEGORIES,
 	GET_PRODUCT_SUB_CATEGORIES,
 	POST_PRODUCT,
+	UPDATE_PRODUCT,
 	GET_PRODUCT,
 	GET_PRODUCTS,
 	PRODUCT_METRIC,
@@ -347,6 +348,103 @@ export const postProduct = (payload) => async (dispatch) => {
 		toast.error('Error! Adding product was unsuccessful');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'POST_PRODUCT')
+		);
+	}
+};
+
+export const updateProduct = (payload) => async (dispatch) => {
+	const token = tokenConfig();
+	const {
+		_id,
+		name,
+		model,
+		brand,
+		color,
+		locality,
+		gender,
+		ageGroup,
+		files, // Please provide it as file
+		size,
+		weight,
+		currency,
+		price,
+		salePrice,
+		quantity,
+		description,
+		categoryId,
+		subCategoryId,
+		condition,
+		inventoryThreshold,
+		availability,
+		availabilityDate,
+		salePriceEffectiveStartDate,
+		salePriceEffectiveEndDate,
+		manufactererPartNumber,
+		globalTradeItemNumber,
+	} = payload;
+	console.log(payload);
+
+	try {
+		let formData = new FormData();
+
+		formData.append('name', name);
+		formData.append('model', model);
+		formData.append('brand', brand);
+		formData.append('color', color);
+		formData.append('locality', locality);
+		formData.append('gender', gender);
+		formData.append('ageGroup', ageGroup);
+		formData.append('size', size);
+		formData.append('weight', weight);
+		formData.append('currency', currency);
+		formData.append('price', price);
+		formData.append('salePrice', salePrice);
+		formData.append('quantity', quantity);
+		formData.append('description', description);
+		formData.append('categoryId', categoryId);
+		formData.append('subCategoryId', subCategoryId);
+		formData.append('condition', condition);
+		formData.append('inventoryThreshold', inventoryThreshold);
+		formData.append('availability', availability);
+		formData.append('availabilityDate', availabilityDate);
+		formData.append('salePriceEffectiveStartDate', salePriceEffectiveStartDate);
+		formData.append('salePriceEffectiveEndDate', salePriceEffectiveEndDate);
+		formData.append('manufactererPartNumber', manufactererPartNumber);
+		formData.append('globalTradeItemNumber', globalTradeItemNumber);
+
+		// upload multiple images
+		if (files !== false) {
+			files?.map((file) => {
+				formData.append(`file`, file);
+			});
+		}
+
+		const response = await axios.put(
+			`${PRODUCTS_SERVER}/${_id}`,
+			formData,
+			token
+		);
+		const data = await response.data;
+		// console.log(data);
+
+		if (data) {
+			batch(() => {
+				dispatch({ type: PRODUCT_LOADING });
+				dispatch({
+					type: UPDATE_PRODUCT,
+					payload: data,
+				});
+			});
+
+			toast.success(`Success! New product added.`);
+		}
+
+		dispatch(clearErrors());
+	} catch (error) {
+		console.log(error);
+		toast.error('Error! Updating product was unsuccessful');
+		dispatch(
+			returnErrors(error.response.data, error.response.status, 'UPDATE_PRODUCT')
 		);
 	}
 };

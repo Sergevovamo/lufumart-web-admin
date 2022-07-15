@@ -55,6 +55,7 @@ import useTable from '../../../utils/useTable';
 import { tokenConfig } from '../../../store/actions/auth-actions';
 import {
 	postProduct,
+	updateProduct,
 	getProducts,
 	getTotalProducts,
 } from '../../../store/actions/product-actions';
@@ -392,7 +393,6 @@ const MyProducts = () => {
 		setStartDateValue(salePriceEffectiveStartDate);
 		setEndDateValue(salePriceEffectiveEndDate);
 
-		// setUpdatedCategory(data);
 		setOpenEditPopup(true);
 	};
 
@@ -609,7 +609,7 @@ const MyProducts = () => {
 
 	const onSubmitEdit = async (data, e) => {
 		e.preventDefault();
-		// setButtonLoading(true);
+		setButtonLoading(true);
 
 		const {
 			name,
@@ -650,6 +650,7 @@ const MyProducts = () => {
 		}
 
 		const newData = {
+			_id: updatedProduct?._id,
 			name: name ? name : updatedProduct?.name,
 			brand: brand ? brand : updatedProduct?.brand,
 			model: model ? model : updatedProduct?.model,
@@ -693,7 +694,11 @@ const MyProducts = () => {
 			globalTradeItemNumber: '',
 		};
 
-		console.log(newData);
+		await dispatch(updateProduct(newData));
+		await dispatch(getProducts());
+
+		setButtonLoading(false);
+		handleCloseDialog();
 	};
 
 	const thumbs = files.map((file) => (

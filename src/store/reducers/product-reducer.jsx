@@ -8,6 +8,7 @@ import {
 	POST_PRODUCT_SUB_CATEGORY,
 	DELETE_PRODUCT_CATEGORY,
 	POST_PRODUCT,
+	UPDATE_PRODUCT,
 	GET_PRODUCT,
 	GET_PRODUCTS,
 	PRODUCT_METRIC,
@@ -92,6 +93,13 @@ export default function IdeaReducer(state = initialState, action) {
 				products: action.payload,
 			};
 		case POST_PRODUCT:
+			return {
+				...state,
+				isAuthenticated: true,
+				isLoading: false,
+				product: action.payload,
+			};
+		case UPDATE_PRODUCT:
 			return {
 				...state,
 				isAuthenticated: true,

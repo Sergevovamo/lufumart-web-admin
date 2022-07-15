@@ -496,6 +496,18 @@ export const getProducts = (payload) => async (dispatch) => {
 				payload: data,
 			});
 			dispatch(clearErrors());
+		} else {
+			dispatch({ type: PRODUCT_LOADING });
+
+			const response = await axios.get(`${PRODUCTS_SERVER}`, token);
+			const data = await response.data;
+
+			// console.log(data);
+			await dispatch({
+				type: GET_PRODUCTS,
+				payload: data,
+			});
+			dispatch(clearErrors());
 		}
 	} catch (error) {
 		console.log(error);

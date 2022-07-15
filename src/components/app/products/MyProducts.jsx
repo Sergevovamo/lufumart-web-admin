@@ -698,7 +698,7 @@ const MyProducts = () => {
 		await dispatch(getProducts());
 
 		setButtonLoading(false);
-		handleCloseDialog();
+		handleCloseEditDialog();
 	};
 
 	const thumbs = files.map((file) => (

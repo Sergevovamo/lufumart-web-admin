@@ -695,7 +695,11 @@ const MyProducts = () => {
 		};
 
 		await dispatch(updateProduct(newData));
-		await dispatch(getProducts());
+		const payload = {
+			page,
+			limit: rowsPerPage,
+		};
+		await dispatch(getProducts(payload));
 
 		setButtonLoading(false);
 		handleCloseEditDialog();

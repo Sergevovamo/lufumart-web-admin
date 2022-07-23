@@ -79,6 +79,53 @@
 	width: 100%;
 }
 
+.tableResponsive {
+	overflow-x: auto;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 50px;
+	padding: 10px;
+	margin: 10px;
+	/* white-space: nowrap; */
+}
+
+th {
+	max-width: 300px;
+	min-width: 125px;
+	padding: 10px !important;
+	overflow-x: auto;
+	white-space: nowrap;
+	text-align: center !important;
+}
+tr {
+	height: 40px !important;
+}
+
+td {
+	height: 40px !important;
+	padding: 5px !important;
+	text-align: center !important;
+}
+
+.tablePhoto {
+	aspect-ratio: 1 / 1;
+	object-fit: contain;
+	width: 100%;
+}
+
+.searchInput {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0.5rem;
+	width: 400px;
+	border-radius: 7px;
+	background-color: #fff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+
 .imageCard {
 	margin-bottom: 1rem;
 	display: flex;
@@ -93,4 +140,26 @@
 	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
 		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.imageCardUpdate {
+	margin-bottom: 1rem;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 0.5rem;
+	width: 400px;
+	border-radius: 7px;
+	background: #ffffff;
+	transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+	box-shadow: 0px 0px 0px 0.5px rgba(50, 50, 93, 0.1),
+		0px 2px 5px 0px rgba(50, 50, 93, 0.1), 0px 1px 1.5px 0px rgba(0, 0, 0, 0.07);
+}
+.productImageUpdate {
+	object-fit: contain;
+	width: 100%;
+}
+.productImageCardUpdate {
+	width: 350px;
+	height: auto;
 }

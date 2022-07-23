@@ -25,6 +25,7 @@ const initialState = {
 	products: null,
 	totalProducts: null,
 	totalOrders: null,
+	totalSearchProducts: null,
 	totalProductCategories: null,
 	totalProductSubCategories: null,
 };
@@ -91,6 +92,7 @@ export default function IdeaReducer(state = initialState, action) {
 				isAuthenticated: true,
 				isLoading: false,
 				products: action.payload,
+				totalSearchProducts: action.totalSearchProducts,
 			};
 		case POST_PRODUCT:
 			return {

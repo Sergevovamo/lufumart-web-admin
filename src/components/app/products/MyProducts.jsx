@@ -2,6 +2,7 @@ import React, {
 	useState,
 	useEffect,
 	useCallback,
+	useRef,
 	useMemo,
 	Fragment,
 } from 'react';
@@ -17,6 +18,10 @@ import {
 	TableCell,
 	TableContainer,
 	TableRow,
+	Table,
+	TableHead,
+	TableSortLabel,
+	TablePagination,
 	Popover,
 	Tooltip,
 	Paper,
@@ -36,7 +41,7 @@ import {
 	Typography,
 	Autocomplete,
 	CircularProgress,
-	TablePagination,
+	InputBase,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
@@ -46,6 +51,7 @@ import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import { useForm } from 'react-hook-form';
 import { orange } from '@mui/material/colors';
 import MoreVert from '@mui/icons-material/MoreVert';
+import Search from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import GridViewOutlined from '@mui/icons-material/GridViewOutlined';
 import ViewDay from '@mui/icons-material/ViewDay';
@@ -57,6 +63,7 @@ import {
 	postProduct,
 	updateProduct,
 	getProducts,
+	searchProducts,
 	getTotalProducts,
 } from '../../../store/actions/product-actions';
 import AdornedButton from '../../../utils/AdornedButton';
@@ -78,11 +85,15 @@ const MyProducts = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const token = tokenConfig();
+	const searchValue = useRef();
 
 	let auth = useSelector((state) => state.auth);
 	let products = useSelector((state) => state.products);
 	let isLoading = useSelector((state) => state.products?.isLoading);
 	const totalProducts = useSelector((state) => state.products?.totalProducts);
+	const totalSearchProducts = useSelector(
+		(state) => state.products?.totalSearchProducts
+	);
 
 	const [files, setFiles] = useState([]);
 	const [openPopup, setOpenPopup] = useState(false);
@@ -126,18 +137,14 @@ const MyProducts = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [toggleView, setToggleView] = useState(false);
 
-	const pages = [20, 50, 100, 250];
+	const pages = [20, 50];
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(pages[page]);
+	const [order, setOrder] = useState('desc');
+	const [orderBy, setOrderBy] = useState('_id');
 
 	const loading = open && options.length === 0;
 	const loadingSub = openSub && optionsSub.length === 0;
-
-	const [filteredSearch, setFilteredSearch] = useState({
-		fn: (items) => {
-			return items;
-		},
-	});
 
 	const {
 		register,
@@ -193,12 +200,26 @@ const MyProducts = () => {
 	}, []);
 
 	useEffect(() => {
-		const payload = {
-			page,
-			limit: rowsPerPage,
-		};
+		if (searchValue?.current?.value === '') {
+			const payload = {
+				page,
+				order,
+				orderBy,
+				limit: rowsPerPage,
+			};
 
-		dispatch(getProducts(payload));
+			dispatch(getProducts(payload));
+		} else {
+			const payload = {
+				page,
+				order,
+				orderBy,
+				searchTerm: searchValue.current.value,
+				limit: rowsPerPage,
+			};
+
+			dispatch(searchProducts(payload));
+		}
 	}, [page, rowsPerPage]);
 
 	useEffect(() => {
@@ -270,28 +291,42 @@ const MyProducts = () => {
 	const columns = useMemo(() => COLUMNS, []);
 	const data = useMemo(() => products?.products, [products?.products]);
 
-	const {
-		CustomTable,
-		CustomHead,
-		CustomPagination,
-		recordsAfterPagingAndSorting,
-	} = useTable(totalProducts, data, columns, filteredSearch);
-
 	const handleSearch = (e) => {
 		let target = e.target;
-		setFilteredSearch({
-			fn: (items) => {
-				if (target.value === '') return items;
-				else
-					return items.filter((x) => {
-						return (
-							x.name.toLowerCase().indexOf(target.value.toLowerCase()) > -1 ||
-							x.description.toLowerCase().indexOf(target.value.toLowerCase()) >
-								-1
-						);
-					});
-			},
-		});
+		if (target.value === '') {
+			const payload = {
+				page,
+				order,
+				orderBy,
+				limit: rowsPerPage,
+			};
+
+			dispatch(getProducts(payload));
+		} else {
+			const payload = {
+				page,
+				order,
+				orderBy,
+				searchTerm: target.value,
+				limit: rowsPerPage,
+			};
+
+			dispatch(searchProducts(payload));
+		}
+	};
+
+	const handleSortRequest = (property) => {
+		const isAsc = orderBy === property && order === 'asc';
+		setOrder(isAsc ? 'desc' : 'asc');
+		setOrderBy(property);
+		const payload = {
+			page,
+			order,
+			orderBy,
+			limit: rowsPerPage,
+		};
+
+		dispatch(getProducts(payload));
 	};
 
 	const handlePageChange = (event, newPage) => {
@@ -601,7 +636,15 @@ const MyProducts = () => {
 		// console.log(newData);
 
 		await dispatch(postProduct(newData));
-		await dispatch(getProducts());
+
+		const payload = {
+			page,
+			order,
+			orderBy,
+			limit: rowsPerPage,
+		};
+
+		await dispatch(getProducts(payload));
 
 		setButtonLoading(false);
 		handleCloseDialog();
@@ -697,6 +740,8 @@ const MyProducts = () => {
 		await dispatch(updateProduct(newData));
 		const payload = {
 			page,
+			order,
+			orderBy,
 			limit: rowsPerPage,
 		};
 		await dispatch(getProducts(payload));
@@ -748,6 +793,17 @@ const MyProducts = () => {
 				<IconButton onClick={() => navigate('/products')}>
 					<ArrowBackIcon />
 				</IconButton>
+				<div className={styles.searchInput}>
+					<div style={{ paddingRight: '1rem' }}>
+						<Search />
+					</div>
+					<InputBase
+						inputRef={searchValue}
+						onChange={handleSearch}
+						placeholder="Search for products..."
+						fullWidth
+					/>
+				</div>
 				<Grid
 					item
 					style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
@@ -759,207 +815,36 @@ const MyProducts = () => {
 				</Grid>
 			</Grid>
 			{toggleView ? (
-				<div className={styles.products}>
-					{products?.products?.length > 0 ? (
-						recordsAfterPagingAndSorting()?.map((product) => {
-							const {
-								_id,
-								name,
-								description,
-								owner,
-								currency,
-								category,
-								imageUrl,
-								price,
-								salePrice,
-								updatedAt,
-							} = product;
+				<>
+					<div className={styles.products}>
+						{products?.products?.length > 0 ? (
+							products?.products?.map((product) => {
+								const {
+									_id,
+									name,
+									description,
+									owner,
+									currency,
+									category,
+									imageUrl,
+									price,
+									salePrice,
+									updatedAt,
+								} = product;
 
-							return (
-								<div className={styles.productCard} key={_id}>
-									<CardHeader
-										avatar={
-											<Avatar sx={{ bgcolor: orange[500] }} aria-label="recipe">
-												{owner?.name.charAt(0)}
-											</Avatar>
-										}
-										action={
-											<>
-												<PopupState
-													variant="popover"
-													popupId="demo-popup-popover"
+								return (
+									<div className={styles.productCard} key={_id}>
+										<CardHeader
+											avatar={
+												<Avatar
+													sx={{ bgcolor: orange[500] }}
+													aria-label="recipe"
 												>
-													{(popupState) => (
-														<>
-															<IconButton {...bindTrigger(popupState)}>
-																<Tooltip
-																	title="More actions"
-																	placement="right"
-																	arrow
-																>
-																	<MoreVert />
-																</Tooltip>
-															</IconButton>
-															<Popover
-																{...bindPopover(popupState)}
-																anchorOrigin={{
-																	vertical: 'top',
-																	horizontal: 'right',
-																}}
-																transformOrigin={{
-																	vertical: 'top',
-																	horizontal: 'right',
-																}}
-																elevation={1}
-															>
-																<Typography
-																	sx={{
-																		display: 'flex',
-																		flexDirection: 'column',
-																		padding: 2,
-																	}}
-																>
-																	<Link
-																		to="#"
-																		onClick={(e) => handleEditPopup(product, e)}
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
-																		}}
-																	>
-																		Update
-																	</Link>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
-																		}}
-																	>
-																		Suspend
-																	</Link>
-																	<Link
-																		to="#"
-																		style={{
-																			textDecoration: 'none',
-																			color: '#000',
-																			marginTop: 5,
-																		}}
-																	>
-																		Unsuspend
-																	</Link>
-																</Typography>
-															</Popover>
-														</>
-													)}
-												</PopupState>
-											</>
-										}
-										title={owner?.name}
-										subheader={format(new Date(updatedAt), 'do MMM yyyy')}
-									/>
-									<div className={styles.productImageCard}>
-										<img
-											className={styles.productImage}
-											src={`${imageUrl[0]}`}
-											alt="product-img"
-										/>
-									</div>
-									<div className={styles.productName}>
-										<h4>{name}</h4>
-									</div>
-									<h4
-										style={{
-											color: '#02AB55',
-											marginTop: '.5rem',
-											fontSize: '1rem',
-										}}
-									>
-										USD ${salePrice}
-									</h4>
-								</div>
-							);
-						})
-					) : (
-						<Grid
-							container
-							direction="row"
-							justifyContent="center"
-							alignItems="center"
-						>
-							<Grid item>
-								{loading ? (
-									<CircularProgress
-										variant="indeterminate"
-										disableShrink
-										size={25}
-										thickness={4}
-									/>
-								) : (
-									<p>You have no product categories</p>
-								)}
-							</Grid>
-						</Grid>
-					)}
-				</div>
-			) : (
-				<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
-					<div
-						style={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-							marginTop: '1rem',
-							marginLeft: '1rem',
-							marginRight: '1rem',
-						}}
-					>
-						<h3>{totalProducts} Products</h3>
-						<Button variant="contained" onClick={handleClickOpen}>
-							Add Product
-						</Button>
-					</div>
-					<CustomTable>
-						<CustomHead />
-						<TableBody>
-							{products?.products?.length > 0 ? (
-								recordsAfterPagingAndSorting()?.map((product) => {
-									const {
-										_id,
-										name,
-										description,
-										owner,
-										currency,
-										category,
-										imageUrl,
-										price,
-										salePrice,
-										updatedAt,
-									} = product;
-
-									return (
-										<Fragment key={_id}>
-											<TableRow>
-												<TableCell>
-													<img
-														style={{ width: '50px' }}
-														src={imageUrl[0]}
-														alt={name}
-													/>
-												</TableCell>
-												<TableCell>{name}</TableCell>
-												<TableCell align="left">{description}</TableCell>
-												<TableCell align="left">{category?.name}</TableCell>
-												<TableCell align="left">
-													{currency} {numberWithCommas(price)}
-												</TableCell>
-												<TableCell align="left">
-													USD ${numberWithCommas(salePrice)}
-												</TableCell>
-												{/* <TableCell align="left">{owner?.name}</TableCell> */}
-												<TableCell>
+													{owner?.name.charAt(0)}
+												</Avatar>
+											}
+											action={
+												<>
 													<PopupState
 														variant="popover"
 														popupId="demo-popup-popover"
@@ -994,16 +879,6 @@ const MyProducts = () => {
 																			padding: 2,
 																		}}
 																	>
-																		<Link
-																			to="#"
-																			style={{
-																				textDecoration: 'none',
-																				color: '#000',
-																			}}
-																			sx={{ padding: 2 }}
-																		>
-																			View
-																		</Link>
 																		<Link
 																			to="#"
 																			onClick={(e) =>
@@ -1042,32 +917,277 @@ const MyProducts = () => {
 															</>
 														)}
 													</PopupState>
-												</TableCell>
-											</TableRow>
-										</Fragment>
-									);
-								})
-							) : (
-								<TableRow>
-									<TableCell
-										colSpan={12}
-										style={{ padding: '1rem', textAlign: 'center' }}
-									>
-										{isLoading ? (
-											<CircularProgress
-												variant="indeterminate"
-												disableShrink
-												size={25}
-												thickness={4}
+												</>
+											}
+											title={owner?.name}
+											subheader={format(new Date(updatedAt), 'do MMM yyyy')}
+										/>
+										<div className={styles.productImageCard}>
+											<img
+												className={styles.productImage}
+												src={`${imageUrl[0]}`}
+												alt="product-img"
 											/>
-										) : (
-											<p>You have no products</p>
-										)}
-									</TableCell>
+										</div>
+										<div className={styles.productName}>
+											<h4>{name}</h4>
+										</div>
+										<h4
+											style={{
+												color: '#02AB55',
+												marginTop: '.5rem',
+												fontSize: '1rem',
+											}}
+										>
+											USD ${salePrice}
+										</h4>
+									</div>
+								);
+							})
+						) : (
+							<Grid
+								container
+								direction="row"
+								justifyContent="center"
+								alignItems="center"
+							>
+								<Grid item>
+									{loading ? (
+										<CircularProgress
+											variant="indeterminate"
+											disableShrink
+											size={25}
+											thickness={4}
+										/>
+									) : (
+										<p>You have no products</p>
+									)}
+								</Grid>
+							</Grid>
+						)}
+					</div>
+					<TablePagination
+						sx={{ overflow: 'hidden' }}
+						component="div"
+						page={page}
+						rowsPerPageOptions={pages}
+						rowsPerPage={rowsPerPage}
+						count={totalProducts ? totalProducts : 0}
+						onPageChange={handlePageChange}
+						onRowsPerPageChange={handleRowsPerPageChange}
+					/>
+				</>
+			) : (
+				<TableContainer sx={{ marginTop: '.5rem' }} component={Paper}>
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+							marginTop: '1rem',
+							marginLeft: '1rem',
+							marginRight: '1rem',
+						}}
+					>
+						<h3>
+							{totalSearchProducts ? totalSearchProducts : totalProducts}{' '}
+							Products
+						</h3>
+						<Button variant="contained" onClick={handleClickOpen}>
+							Add Product
+						</Button>
+					</div>
+					<Paper className={styles.tableResponsive} elevation={0}>
+						<Table>
+							<TableHead>
+								<TableRow>
+									{columns?.map((column) => {
+										return (
+											<TableCell
+												key={column.id}
+												sortDirection={orderBy === column.id ? order : false}
+											>
+												<TableSortLabel
+													active={orderBy === column.id}
+													direction={orderBy === column.id ? order : 'asc'}
+													onClick={() => {
+														handleSortRequest(column.id);
+													}}
+												>
+													{column.label}
+												</TableSortLabel>
+											</TableCell>
+										);
+									})}
 								</TableRow>
-							)}
-						</TableBody>
-					</CustomTable>
+							</TableHead>
+							<TableBody>
+								{products?.products?.length > 0 ? (
+									products?.products?.map((product) => {
+										const {
+											_id,
+											name,
+											description,
+											owner,
+											currency,
+											category,
+											imageUrl,
+											price,
+											salePrice,
+											createdAt,
+											updatedAt,
+										} = product;
+
+										return (
+											<Fragment key={_id}>
+												<TableRow>
+													<TableCell>
+														<img
+															className={styles.tablePhoto}
+															src={imageUrl[0]}
+															alt={name}
+														/>
+													</TableCell>
+													<TableCell component="th" scope="row">
+														{name}
+													</TableCell>
+													<TableCell component="th" scope="row">
+														{description}
+													</TableCell>
+													<TableCell component="th" scope="row">
+														{category?.name}
+													</TableCell>
+													<TableCell>
+														{currency} {numberWithCommas(price)}
+													</TableCell>
+													<TableCell component="th" scope="row">
+														USD ${numberWithCommas(salePrice)}
+													</TableCell>
+													<TableCell component="th" scope="row">
+														{owner?.name}
+													</TableCell>
+													<TableCell component="th" scope="row">
+														{format(
+															new Date(createdAt),
+															"do MMM yyyy, h:mm:ss aaaaa'm'"
+														)}
+													</TableCell>
+													<TableCell component="th" scope="row">
+														{format(
+															new Date(updatedAt),
+															"do MMM yyyy, h:mm:ss aaaaa'm'"
+														)}
+													</TableCell>
+													<TableCell>
+														<PopupState
+															variant="popover"
+															popupId="demo-popup-popover"
+														>
+															{(popupState) => (
+																<>
+																	<IconButton {...bindTrigger(popupState)}>
+																		<Tooltip
+																			title="More actions"
+																			placement="right"
+																			arrow
+																		>
+																			<MoreVert />
+																		</Tooltip>
+																	</IconButton>
+																	<Popover
+																		{...bindPopover(popupState)}
+																		anchorOrigin={{
+																			vertical: 'top',
+																			horizontal: 'right',
+																		}}
+																		transformOrigin={{
+																			vertical: 'top',
+																			horizontal: 'right',
+																		}}
+																		elevation={1}
+																	>
+																		<Typography
+																			sx={{
+																				display: 'flex',
+																				flexDirection: 'column',
+																				padding: 2,
+																			}}
+																		>
+																			<Link
+																				to="#"
+																				style={{
+																					textDecoration: 'none',
+																					color: '#000',
+																				}}
+																				sx={{ padding: 2 }}
+																			>
+																				View
+																			</Link>
+																			<Link
+																				to="#"
+																				onClick={(e) =>
+																					handleEditPopup(product, e)
+																				}
+																				style={{
+																					textDecoration: 'none',
+																					color: '#000',
+																					marginTop: 5,
+																				}}
+																			>
+																				Update
+																			</Link>
+																			<Link
+																				to="#"
+																				style={{
+																					textDecoration: 'none',
+																					color: '#000',
+																					marginTop: 5,
+																				}}
+																			>
+																				Suspend
+																			</Link>
+																			<Link
+																				to="#"
+																				style={{
+																					textDecoration: 'none',
+																					color: '#000',
+																					marginTop: 5,
+																				}}
+																			>
+																				Unsuspend
+																			</Link>
+																		</Typography>
+																	</Popover>
+																</>
+															)}
+														</PopupState>
+													</TableCell>
+												</TableRow>
+											</Fragment>
+										);
+									})
+								) : (
+									<TableRow>
+										<TableCell
+											colSpan={12}
+											style={{ padding: '1rem', textAlign: 'center' }}
+										>
+											{isLoading ? (
+												<CircularProgress
+													variant="indeterminate"
+													disableShrink
+													size={25}
+													thickness={4}
+												/>
+											) : (
+												<p>You have no products</p>
+											)}
+										</TableCell>
+									</TableRow>
+								)}
+							</TableBody>
+						</Table>
+					</Paper>
 					<TablePagination
 						sx={{ overflow: 'hidden' }}
 						component="div"
@@ -1422,7 +1542,7 @@ const MyProducts = () => {
 								type="number"
 								value={salePrice}
 								autoComplete="off"
-								label="Product Sale Price"
+								label="Product Sale Price in $ USD"
 								placeholder="800"
 							/>
 						</div>
@@ -1744,9 +1864,27 @@ const MyProducts = () => {
 							</div>
 						</LocalizationProvider>
 
+						<TextField
+							{...register('description', {
+								required: 'Description is required!',
+								shouldFocus: true,
+							})}
+							sx={{ marginBottom: '.8rem', marginTop: '.8rem' }}
+							name="description"
+							fullWidth
+							multiline
+							rows={4}
+							autoComplete="off"
+							label="Product description"
+							placeholder="Type your description"
+							error={errors?.description ? true : false}
+							helperText={errors?.description?.message}
+						/>
+
 						<div
 							style={{
 								display: 'flex',
+								flexWrap: 'wrap',
 								alignItems: 'center',
 								justifyContent: 'center',
 								gap: '1rem',
@@ -1754,10 +1892,10 @@ const MyProducts = () => {
 						>
 							{updatedProduct.imageUrl?.map((image, index) => {
 								return (
-									<div className={styles.imageCard} key={index}>
-										<div className={styles.productImageCard}>
+									<div className={styles.imageCardUpdate} key={index}>
+										<div className={styles.productImageCardUpdate}>
 											<img
-												className={styles.productImage}
+												className={styles.productImageUpdate}
 												src={`${image}`}
 												alt="product-img"
 											/>
@@ -1784,23 +1922,6 @@ const MyProducts = () => {
 						>
 							{thumbs}
 						</aside>
-
-						<TextField
-							{...register('description', {
-								required: 'Description is required!',
-								shouldFocus: true,
-							})}
-							sx={{ marginBottom: '.8rem', marginTop: '.8rem' }}
-							name="description"
-							fullWidth
-							multiline
-							rows={4}
-							autoComplete="off"
-							label="Product description"
-							placeholder="Type your description"
-							error={errors?.description ? true : false}
-							helperText={errors?.description?.message}
-						/>
 					</DialogContent>
 					<DialogActions sx={{ marginRight: '1rem', marginBottom: '1rem' }}>
 						<Button
@@ -1942,7 +2063,7 @@ const productAvailability = [
 const COLUMNS = [
 	{
 		id: 'photo',
-		label: 'Photo',
+		label: 'Product Photo',
 	},
 	{
 		id: 'name',
@@ -1964,10 +2085,18 @@ const COLUMNS = [
 		id: 'salePrice',
 		label: 'Sale Price',
 	},
-	// {
-	// 	id: 'owner',
-	// 	label: 'Owner',
-	// },
+	{
+		id: 'owner',
+		label: 'Owner',
+	},
+	{
+		id: 'createdAt',
+		label: 'Created At',
+	},
+	{
+		id: 'updatedAt',
+		label: 'Updated At',
+	},
 	{
 		id: 'action',
 		label: 'Action',

@@ -1057,9 +1057,11 @@ const MyProducts = () => {
 													<TableCell component="th" scope="row">
 														{name}
 													</TableCell>
-													<TableCell component="th" scope="row">
+
+													<TableCell className={styles.descriptionTh}>
 														{description}
 													</TableCell>
+
 													<TableCell component="th" scope="row">
 														{category?.name}
 													</TableCell>

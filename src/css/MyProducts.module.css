@@ -93,10 +93,20 @@ th {
 	max-width: 300px;
 	min-width: 125px;
 	padding: 10px !important;
-	overflow-x: auto;
+	overflow-x: scroll;
 	white-space: nowrap;
 	text-align: center !important;
 }
+
+.descriptionTh {
+	display: inline-block !important;
+	max-width: 500px;
+	min-width: 500px;
+	min-height: 150px;
+	overflow-x: scroll;
+	vertical-align: middle;
+}
+
 tr {
 	height: 40px !important;
 }

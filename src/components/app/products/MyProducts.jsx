@@ -972,7 +972,13 @@ const MyProducts = () => {
 						page={page}
 						rowsPerPageOptions={pages}
 						rowsPerPage={rowsPerPage}
-						count={totalProducts ? totalProducts : 0}
+						count={
+							totalSearchProducts
+								? totalSearchProducts
+								: totalProducts
+								? totalProducts
+								: 0
+						}
 						onPageChange={handlePageChange}
 						onRowsPerPageChange={handleRowsPerPageChange}
 					/>
@@ -1194,7 +1200,13 @@ const MyProducts = () => {
 						page={page}
 						rowsPerPageOptions={pages}
 						rowsPerPage={rowsPerPage}
-						count={totalProducts ? totalProducts : 0}
+						count={
+							totalSearchProducts
+								? totalSearchProducts
+								: totalProducts
+								? totalProducts
+								: 0
+						}
 						onPageChange={handlePageChange}
 						onRowsPerPageChange={handleRowsPerPageChange}
 					/>

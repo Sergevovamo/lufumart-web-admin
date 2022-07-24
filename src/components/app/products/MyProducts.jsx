@@ -926,7 +926,7 @@ const MyProducts = () => {
 											<img
 												className={styles.productImage}
 												src={`${imageUrl[0]}`}
-												alt="product-img"
+												alt={name}
 											/>
 										</div>
 										<div className={styles.productName}>
@@ -939,7 +939,7 @@ const MyProducts = () => {
 												fontSize: '1rem',
 											}}
 										>
-											USD ${salePrice}
+											Sale Price USD ${salePrice}
 										</h4>
 									</div>
 								);

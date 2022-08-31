@@ -238,7 +238,7 @@ export const getProductSubCategories = () => async (dispatch) => {
 		const response = await axios.get(`${PRODUCTS_SUB_CATEGORY_SERVER}`, token);
 		const data = await response.data;
 
-		// console.log(data);
+		console.log(data);
 		await dispatch({
 			type: GET_PRODUCT_SUB_CATEGORIES,
 			payload: data,

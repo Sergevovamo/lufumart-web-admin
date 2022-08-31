@@ -561,7 +561,6 @@ const MyProducts = () => {
 
 	const onSubmit = async (data, e) => {
 		e.preventDefault();
-		setButtonLoading(true);
 
 		const {
 			name,
@@ -604,6 +603,8 @@ const MyProducts = () => {
 		if (endDateValue < startDateValue) {
 			return toast.error(`Error! Sale end date can't be less than start date.`);
 		}
+
+		setButtonLoading(true);
 
 		const newData = {
 			name,
@@ -652,7 +653,6 @@ const MyProducts = () => {
 
 	const onSubmitEdit = async (data, e) => {
 		e.preventDefault();
-		setButtonLoading(true);
 
 		const {
 			name,
@@ -691,6 +691,8 @@ const MyProducts = () => {
 		if (endDateValue < startDateValue) {
 			return toast.error(`Error! Sale end date can't be less than start date.`);
 		}
+
+		setButtonLoading(true);
 
 		const newData = {
 			_id: updatedProduct?._id,
@@ -1047,6 +1049,9 @@ const MyProducts = () => {
 										return (
 											<Fragment key={_id}>
 												<TableRow>
+													<TableCell component="th" scope="row">
+														{_id}
+													</TableCell>
 													<TableCell>
 														<img
 															className={styles.tablePhoto}
@@ -2075,6 +2080,10 @@ const productAvailability = [
 ];
 
 const COLUMNS = [
+	{
+		id: '_id',
+		label: 'Product ID',
+	},
 	{
 		id: 'photo',
 		label: 'Product Photo',

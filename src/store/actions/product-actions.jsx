@@ -542,7 +542,6 @@ export const searchProducts = (payload) => async (dispatch) => {
 		}
 	} catch (error) {
 		console.log(error);
-		toast.error('Error. Something went wrong!');
 		dispatch(
 			returnErrors(error.response.data, error.response.status, 'GET_PRODUCTS')
 		);

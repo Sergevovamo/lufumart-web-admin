@@ -18,10 +18,10 @@ import {
 import { returnErrors, clearErrors } from './error-actions';
 
 const PRODUCTS_CATEGORY_SERVER =
-	'https://api-v1.lufumart.com/api/v1/product-categories';
+	'https://apis.lufumart.net/api/v1/product-categories';
 const PRODUCTS_SUB_CATEGORY_SERVER =
-	'https://api-v1.lufumart.com/api/v1/product-sub-categories';
-const PRODUCTS_SERVER = 'https://api-v1.lufumart.com/api/v1/products';
+	'https://apis.lufumart.net/api/v1/product-sub-categories';
+const PRODUCTS_SERVER = 'https://apis.lufumart.net/api/v1/products';
 
 export const tokenConfig = () => {
 	// Get token from localStorage
@@ -382,7 +382,6 @@ export const updateProduct = (payload) => async (dispatch) => {
 		manufactererPartNumber,
 		globalTradeItemNumber,
 	} = payload;
-	console.log(payload);
 
 	try {
 		let formData = new FormData();

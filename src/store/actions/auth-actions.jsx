@@ -20,9 +20,9 @@ import {
 	authError,
 } from './error-actions';
 
-const USERS_AUTH = 'https://api-v1.lufumart.com/api/v1/auth';
-const ADMIN_USER_AUTH = 'https://api-v1.lufumart.com/api/v1/admin/auth';
-const SELLERS_AUTH = 'https://api-v1.lufumart.com/api/v1/seller/auth/';
+const USERS_AUTH = 'https://apis.lufumart.net/api/v1/auth';
+const ADMIN_USER_AUTH = 'https://apis.lufumart.net/api/v1/admin/auth';
+const SELLERS_AUTH = 'https://apis.lufumart.net/api/v1/seller/auth/';
 
 // Setup config headers and token
 export const tokenConfig = () => {

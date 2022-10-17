@@ -330,19 +330,14 @@ export const postProduct = (payload) => async (dispatch) => {
 		const data = await response.data;
 		// console.log(data);
 
-		if (data) {
-			batch(() => {
-				dispatch({ type: PRODUCT_LOADING });
-				dispatch({
-					type: POST_PRODUCT,
-					payload: data,
-				});
-			});
-
-			toast.success(`Success! New product added.`);
-		}
+		dispatch({ type: PRODUCT_LOADING });
+		dispatch({
+			type: POST_PRODUCT,
+			payload: data,
+		});
 
 		dispatch(clearErrors());
+		toast.success(`Success! New product added.`);
 	} catch (error) {
 		// console.log(error?.response);
 		toast.error('Error! Adding product was unsuccessful');
